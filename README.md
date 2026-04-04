@@ -1,5 +1,7 @@
 # 🏠 Divera 24/7 Integration for Home Assistant
 
+> **Note:** This is a fork of [fwmarcel/home-assistant-divera](https://github.com/fwmarcel/home-assistant-divera), which is no longer available online. Some adaptions have been made by [@dan1elw](https://github.com/dan1elw).
+
 [![GitHub Release](https://img.shields.io/github/v/release/dan1elw/ha-divera-card?sort=semver&style=for-the-badge&color=green)](https://github.com/dan1elw/ha-divera-card/releases/)
 [![GitHub Release Date](https://img.shields.io/github/release-date/dan1elw/ha-divera-card?style=for-the-badge&color=green)](https://github.com/dan1elw/ha-divera-card/releases/)
 ![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/dan1elw/ha-divera-card/latest/total?style=for-the-badge&label=Downloads%20latest%20Release)
