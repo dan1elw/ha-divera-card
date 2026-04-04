@@ -2,8 +2,8 @@ blueprint:
   name: Divera alarm automation
   description: Trigger some actions when a new Divera alarm is triggered.
   domain: automation
-  author: fwmarcel
-  source_url: https://github.com/fwmarcel/home-assistant-divera/blob/main/divera-blueprint.yaml
+  author: dan1elw
+  source_url: https://github.com/dan1elw/ha-divera-card/blob/main/divera-blueprint.yaml
   homeassistant:
     min_version: 2022.4.0
   input:

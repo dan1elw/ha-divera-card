@@ -1,12 +1,12 @@
-# Divera 24/7 Integration for Home Assistant 🏠
+# 🏠 Divera 24/7 Integration for Home Assistant
 
-[![GitHub Release](https://img.shields.io/github/v/release/fwmarcel/home-assistant-divera?sort=semver&style=for-the-badge&color=green)](https://github.com/fwmarcel/home-assistant-divera/releases/)
-[![GitHub Release Date](https://img.shields.io/github/release-date/fwmarcel/home-assistant-divera?style=for-the-badge&color=green)](https://github.com/fwmarcel/home-assistant-divera/releases/)
-![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/fwmarcel/home-assistant-divera/latest/total?style=for-the-badge&label=Downloads%20latest%20Release)
-![HA Analytics](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fanalytics.home-assistant.io%2Fcustom_integrations.json&query=%24.divera.total&style=for-the-badge&label=Active%20Installations&color=red)
-![GitHub commit activity](https://img.shields.io/github/commit-activity/m/fwmarcel/home-assistant-divera?style=for-the-badge)
+> **Note:** This is a fork of [fwmarcel/home-assistant-divera](https://github.com/fwmarcel/home-assistant-divera), which is no longer available online. Some adaptions have been made by [@dan1elw](https://github.com/dan1elw).
+
+[![GitHub Release](https://img.shields.io/github/v/release/dan1elw/ha-divera-card?sort=semver&style=for-the-badge&color=green)](https://github.com/dan1elw/ha-divera-card/releases/)
+[![GitHub Release Date](https://img.shields.io/github/release-date/dan1elw/ha-divera-card?style=for-the-badge&color=green)](https://github.com/dan1elw/ha-divera-card/releases/)
+![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/dan1elw/ha-divera-card/latest/total?style=for-the-badge&label=Downloads%20latest%20Release)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/m/dan1elw/ha-divera-card?style=for-the-badge)
 [![hacs](https://img.shields.io/badge/HACS-Integration-blue.svg?style=for-the-badge)](https://github.com/hacs/integration)
-[![BuyMeCoffee](https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg?style=for-the-badge)](https://www.buymeacoffee.com/fwmarcel)
 
 ## Overview
 
@@ -25,22 +25,22 @@ This integration is available in HACS (Home Assistant Community Store).
 3. Go to any of the sections (integrations, frontend, automation).
 4. Click on the 3 dots in the top right corner.
 5. Select "Custom repositories"
-6. Add following URL to the repository `https://github.com/fwmarcel/home-assistant-divera`.
+6. Add following URL to the repository `https://github.com/dan1elw/ha-divera-card`.
 7. Select Integration as category.
 8. Click the "ADD" button
 9. Search for "Divera"
 10. Click the "Download" button
 
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=fwmarcel&repository=home-assistant-divera&category=Integration)
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=dan1elw&repository=ha-divera-card&category=Integration)
 
 ### Manual
 
-To install this integration manually you have to download [_divera.zip_](https://github.com/fwmarcel/home-assistant-divera/releases/latest/download/divera.zip) and extract its contents to `config/custom_components/divera` directory:
+To install this integration manually you have to download [_divera.zip_](https://github.com/dan1elw/ha-divera-card/releases/latest/download/divera.zip) and extract its contents to `config/custom_components/divera` directory:
 
 ```bash
 mkdir -p custom_components/divera
 cd custom_components/divera
-wget https://github.com/fwmarcel/home-assistant-divera/releases/latest/download/divera.zip
+wget https://github.com/dan1elw/ha-divera-card/releases/latest/download/divera.zip
 unzip divera.zip
 rm divera.zip
 ```
@@ -87,7 +87,7 @@ This integration provides entities for the following information from Divera 24/
 
 You can add a basic automation blueprint here:
 
-[![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Ffwmarcel%2Fhome-assistant-divera%2Fblob%2Fmain%2Fdivera-blueprint.yaml)
+[![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Fdan1elw%2Fha-divera-card%2Fblob%2Fmain%2Fdivera-blueprint.yaml)
 
 ## Help and Contribution
 
@@ -104,6 +104,6 @@ Additionally, the user must ensure that the use of this integration complies wit
 
 ## Star History
 
-<a href="https://star-history.com/#fwmarcel/home-assistant-divera">
-  <img src="https://api.star-history.com/svg?repos=fwmarcel/home-assistant-divera&type=Date" alt="Star History Chart" width="100%" />
+<a href="https://star-history.com/#dan1elw/ha-divera-card">
+  <img src="https://api.star-history.com/svg?repos=dan1elw/ha-divera-card&type=Date" alt="Star History Chart" width="100%" />
 </a>
