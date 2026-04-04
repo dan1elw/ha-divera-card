@@ -5,7 +5,6 @@
 [![GitHub Release](https://img.shields.io/github/v/release/dan1elw/ha-divera-card?sort=semver&style=for-the-badge&color=green)](https://github.com/dan1elw/ha-divera-card/releases/)
 [![GitHub Release Date](https://img.shields.io/github/release-date/dan1elw/ha-divera-card?style=for-the-badge&color=green)](https://github.com/dan1elw/ha-divera-card/releases/)
 ![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/dan1elw/ha-divera-card/latest/total?style=for-the-badge&label=Downloads%20latest%20Release)
-![HA Analytics](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fanalytics.home-assistant.io%2Fcustom_integrations.json&query=%24.divera.total&style=for-the-badge&label=Active%20Installations&color=red)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/dan1elw/ha-divera-card?style=for-the-badge)
 [![hacs](https://img.shields.io/badge/HACS-Integration-blue.svg?style=for-the-badge)](https://github.com/hacs/integration)
 
