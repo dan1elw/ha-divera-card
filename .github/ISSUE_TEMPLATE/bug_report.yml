@@ -2,7 +2,7 @@ name: 🐞 Bug Report
 description: Report a bug or issue with the integration.
 title: "<title>"
 labels: "bug"
-assignees: "@fwmarcel"
+assignees: "@dan1elw"
 body:
   - type: markdown
     attributes:
