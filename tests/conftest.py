@@ -2,8 +2,6 @@
 
 import pytest
 
-pytest_plugins = "pytest_homeassistant_custom_component"
-
 MOCK_ACCESSKEY = "test-accesskey-abc123"
 MOCK_UCR_ID = 123
 
