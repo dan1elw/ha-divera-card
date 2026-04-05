@@ -88,11 +88,8 @@ async def async_setup_entry(
                         "vehicle_name": vehicle_name,
                     },
                     icon="mdi:fire-truck",
-                    value_fn=lambda divera, vid=vehicle_id: divera.get_vehicle_state(
-                        vehicle_id  # noqa: B023
-                    ),
-                    attribute_fn=lambda divera,
-                    vid=vehicle_id: divera.get_vehicle_attributes(vehicle_id),  # noqa: B023
+                    value_fn=lambda divera, vid=vehicle_id: divera.get_vehicle_state(vid),
+                    attribute_fn=lambda divera, vid=vehicle_id: divera.get_vehicle_attributes(vid),
                 ),
             )
             entities.append(vehicle_entity)
