@@ -3,8 +3,8 @@
 from http import HTTPStatus
 from unittest.mock import AsyncMock, MagicMock
 
+from aiohttp import ClientResponseError
 import pytest
-from aiohttp import ClientError, ClientResponseError
 
 from custom_components.divera.const import DIVERA_BASE_URL
 from custom_components.divera.divera import (
@@ -51,7 +51,9 @@ def _stub_get_error(session: MagicMock, status: int) -> None:
     """Wire session.get() to raise a ClientResponseError with *status*."""
     request_info = MagicMock()
     request_info.url = MagicMock()
-    request_info.url.human_repr.return_value = "https://app.divera247.com/api/v2/pull/all"
+    request_info.url.human_repr.return_value = (
+        "https://app.divera247.com/api/v2/pull/all"
+    )
     exc = ClientResponseError(
         request_info=request_info,
         history=(),
