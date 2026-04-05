@@ -78,12 +78,18 @@ If a more frequent update is required, this must be implemented using the `homea
 
 ### Entities
 
-This integration provides entities for the following information from Divera 24/7:
+This integration provides the following entities:
 
-- the last visible alarm.
-- the last news
-- calendar entries
-- the current status of the user.
+| Platform        | Entity                          | Description                                      |
+| --------------- | ------------------------------- | ------------------------------------------------ |
+| `binary_sensor` | `binary_sensor.*_active_alarm`  | `on` when there is at least one open alarm; alarm details available as attributes |
+| `sensor`        | `sensor.*_last_alarm`           | Title of the most recent alarm                   |
+| `sensor`        | `sensor.*_last_news`            | Title of the most recent news item               |
+| `sensor`        | `sensor.*_vehicle_status_<name>`| FMS status for each vehicle in your unit         |
+| `select`        | `select.*_user_status`          | Your current Divera availability status (read/write) |
+| `calendar`      | `calendar.*_events`             | Upcoming calendar entries                        |
+
+> **Note:** The `*` placeholder in entity IDs is derived from your unit name (e.g. `feuerwehr_musterstadt`). Find your exact entity IDs under **Developer Tools → States** after setup.
 
 ## Automation Blueprint
 

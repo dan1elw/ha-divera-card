@@ -10,7 +10,7 @@
  *
  * Prerequisites:
  * - dan1elw/ha-divera-card HACS integration installed & configured
- * - REST sensors for vehicle status (see setup guide)
+ * - Vehicle, alarm, and status entities are provided automatically by the integration
  */
 
 class DiveraAlarmCard extends HTMLElement {

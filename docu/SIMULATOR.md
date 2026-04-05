@@ -55,15 +55,20 @@ Four preset alarm states that populate the mock entity data:
 
 ### Eigener Status (own availability)
 
-Dropdown to switch between the five Divera status values:
+Dropdown to switch between available Divera status values. The options shown in the simulator mirror a sample unit configuration — your actual unit may use different labels and IDs, as these are fully configurable in Divera.
 
-| Value | Label             |
-| ----- | ----------------- |
-| 0     | Nicht gesetzt     |
-| 1     | Auf Wache         |
-| 2     | Verfügbar         |
-| 3     | Nicht verfügbar   |
-| 4     | Bedingt verfügbar |
+Example values used in the simulator:
+
+| Label               | Description              |
+| ------------------- | ------------------------ |
+| Außer Dienst        | Off duty                 |
+| Komme nicht         | Not coming               |
+| Nicht einsatzbereit | Not ready for deployment |
+| FEZ / Stab          | Command staff            |
+| Komme               | Coming                   |
+| Einsatzbereit       | Ready (default)          |
+| 1 std. Vorlauf      | 1 hour lead time         |
+| Vorlauf 1 std.      | Lead time 1 hour         |
 
 ### Fahrzeug-FMS
 
@@ -81,14 +86,14 @@ The colored dot updates in the sidebar immediately when the selection changes.
 
 ## Mock vehicle fleet
 
-The simulator includes four example vehicles:
+The simulator includes four example vehicles that mirror the naming convention of integration-provided vehicle entities:
 
-| Entity ID      | Kurzname | Typ                         |
-| -------------- | -------- | --------------------------- |
-| `sensor.v_hlf` | HLF20/16 | Hilfeleistungslöschfahrzeug |
-| `sensor.v_tlf` | TLF3000  | Tanklöschfahrzeug           |
-| `sensor.v_rw`  | RW       | Rüstwagen                   |
-| `sensor.v_elw` | ELW      | Einsatzleitwagen            |
+| Entity ID                  | Kurzname | Typ                         |
+| -------------------------- | -------- | --------------------------- |
+| `sensor.divera_fahrzeug_1` | HLF 20   | Hilfeleistungslöschfahrzeug |
+| `sensor.divera_fahrzeug_2` | LF 10    | Löschfahrzeug               |
+| `sensor.divera_fahrzeug_3` | TLF 3000 | Tanklöschfahrzeug           |
+| `sensor.divera_fahrzeug_4` | ELW      | Einsatzleitwagen            |
 
 ## Development workflow
 

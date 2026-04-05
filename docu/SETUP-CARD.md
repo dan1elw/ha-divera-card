@@ -12,17 +12,18 @@ DIVERA 24/7 Cloud API
         ▼
 dan1elw/ha-divera-card  (HACS Custom Integration)
         │
-        ├── sensor.divera_last_alarm         → Alarmdetails
-        ├── sensor.divera_last_alarm_id      → Alarm-ID
-        ├── sensor.divera_status             → Eigener Status
-        └── (weitere Entities je nach Einheit)
-        │
-        ▼
-REST Sensor (command_line)                  → Fahrzeugstatus
+        ├── binary_sensor.*_active_alarm      → Aktiver Alarm (on/off + Alarmdetails)
+        ├── sensor.*_last_alarm               → Titel des letzten Alarms
+        ├── sensor.*_last_news                → Letzte Neuigkeit
+        ├── sensor.*_vehicle_status_<name>    → Fahrzeugstatus (FMS) je Fahrzeug
+        ├── select.*_user_status              → Eigener Verfügbarkeitsstatus
+        └── calendar.*_events                 → Kalendereinträge
         │
         ▼
 divera-card.js                              → Custom Lovelace Card (automatisch geladen)
 ```
+
+> **Hinweis zu Entity-IDs:** Der `*`-Platzhalter in den Entity-IDs entspricht dem slugifizierten Namen deiner Einheit (z. B. `feuerwehr_musterstadt`). Die genauen Entity-IDs findest du nach der Einrichtung unter **Entwicklerwerkzeuge → Zustände**.
 
 ---
 
@@ -67,120 +68,11 @@ rm divera.zip
 
 ---
 
-## Schritt 2: Fahrzeugstatus via REST Sensor
+## Schritt 2: Dashboard Card konfigurieren
 
-Die HACS-Integration deckt Fahrzeugstatus möglicherweise nicht vollständig ab. Ergänze diese REST Sensoren in deiner `configuration.yaml`:
+Die Integration erstellt automatisch Entities für Alarme, Fahrzeuge und deinen Status — keine zusätzliche Konfiguration in `configuration.yaml` nötig.
 
-```yaml
-# ============================================================
-# DIVERA 24/7 — Fahrzeugstatus Sensoren
-# ============================================================
-# Ersetze YOUR-ACCESS-KEY-HERE mit deinem Divera Access-Key
-
-command_line:
-  - sensor:
-      name: divera_vehicle_raw
-      command: >-
-        curl -s -X GET
-        "https://www.divera247.com/api/v2/pull/vehicle-status?accesskey=YOUR-ACCESS-KEY-HERE"
-      scan_interval: 120
-      value_template: '{{ value_json["success"] }}'
-      json_attributes:
-        - data
-
-# Template-Sensoren für einzelne Fahrzeuge
-# Erstelle einen Sensor pro Fahrzeug. Passe den Array-Index [0], [1], etc. an.
-
-template:
-  - sensor:
-      # --- Fahrzeug 1 ---
-      - name: "Divera Fahrzeug 1"
-        unique_id: divera_vehicle_0
-        state: >-
-          {% set values = ['funkfrei','auf Wache','Einsatz übernommen','Einsatzstelle an','Sprechwunsch','nicht einsatzbereit'] %}
-          {% set data = state_attr('sensor.divera_vehicle_raw', 'data') %}
-          {% if data and data | length > 0 %}
-            {% set status = data[0]['fmsstatus'] | int - 1 %}
-            {{ values[status] if status in range(values | length) else 'unbekannt' }}
-          {% else %}
-            unbekannt
-          {% endif %}
-        attributes:
-          shortname: >-
-            {% set data = state_attr('sensor.divera_vehicle_raw', 'data') %}
-            {{ data[0]['shortname'] if data and data | length > 0 else 'N/A' }}
-          fullname: >-
-            {% set data = state_attr('sensor.divera_vehicle_raw', 'data') %}
-            {{ data[0]['fullname'] if data and data | length > 0 else 'N/A' }}
-          fmsstatus: >-
-            {% set data = state_attr('sensor.divera_vehicle_raw', 'data') %}
-            {{ data[0]['fmsstatus'] if data and data | length > 0 else 0 }}
-          fmsstatus_note: >-
-            {% set data = state_attr('sensor.divera_vehicle_raw', 'data') %}
-            {{ data[0]['fmsstatus_note'] if data and data | length > 0 else '' }}
-
-      # --- Fahrzeug 2 ---
-      - name: "Divera Fahrzeug 2"
-        unique_id: divera_vehicle_1
-        state: >-
-          {% set values = ['funkfrei','auf Wache','Einsatz übernommen','Einsatzstelle an','Sprechwunsch','nicht einsatzbereit'] %}
-          {% set data = state_attr('sensor.divera_vehicle_raw', 'data') %}
-          {% if data and data | length > 1 %}
-            {% set status = data[1]['fmsstatus'] | int - 1 %}
-            {{ values[status] if status in range(values | length) else 'unbekannt' }}
-          {% else %}
-            unbekannt
-          {% endif %}
-        attributes:
-          shortname: >-
-            {% set data = state_attr('sensor.divera_vehicle_raw', 'data') %}
-            {{ data[1]['shortname'] if data and data | length > 1 else 'N/A' }}
-          fullname: >-
-            {% set data = state_attr('sensor.divera_vehicle_raw', 'data') %}
-            {{ data[1]['fullname'] if data and data | length > 1 else 'N/A' }}
-          fmsstatus: >-
-            {% set data = state_attr('sensor.divera_vehicle_raw', 'data') %}
-            {{ data[1]['fmsstatus'] if data and data | length > 1 else 0 }}
-          fmsstatus_note: >-
-            {% set data = state_attr('sensor.divera_vehicle_raw', 'data') %}
-            {{ data[1]['fmsstatus_note'] if data and data | length > 1 else '' }}
-
-      # --- Fahrzeug 3 ---
-      - name: "Divera Fahrzeug 3"
-        unique_id: divera_vehicle_2
-        state: >-
-          {% set values = ['funkfrei','auf Wache','Einsatz übernommen','Einsatzstelle an','Sprechwunsch','nicht einsatzbereit'] %}
-          {% set data = state_attr('sensor.divera_vehicle_raw', 'data') %}
-          {% if data and data | length > 2 %}
-            {% set status = data[2]['fmsstatus'] | int - 1 %}
-            {{ values[status] if status in range(values | length) else 'unbekannt' }}
-          {% else %}
-            unbekannt
-          {% endif %}
-        attributes:
-          shortname: >-
-            {% set data = state_attr('sensor.divera_vehicle_raw', 'data') %}
-            {{ data[2]['shortname'] if data and data | length > 2 else 'N/A' }}
-          fullname: >-
-            {% set data = state_attr('sensor.divera_vehicle_raw', 'data') %}
-            {{ data[2]['fullname'] if data and data | length > 2 else 'N/A' }}
-          fmsstatus: >-
-            {% set data = state_attr('sensor.divera_vehicle_raw', 'data') %}
-            {{ data[2]['fmsstatus'] if data and data | length > 2 else 0 }}
-          fmsstatus_note: >-
-            {% set data = state_attr('sensor.divera_vehicle_raw', 'data') %}
-            {{ data[2]['fmsstatus_note'] if data and data | length > 2 else '' }}
-
-      # Weitere Fahrzeuge: Kopiere einen Block, ändere den Index [3], [4], ...
-```
-
-> **Annahme:** Die Anzahl der Fahrzeuge ist feuerwehrspezifisch. Die Template-Sensoren müssen 1:1 mit den Fahrzeugen in deinem Divera-Account übereinstimmen. Prüfe die Anzahl über `https://www.divera247.com/api/v2/pull/vehicle-status?accesskey=DEIN-KEY` im Browser.
-
----
-
-## Schritt 3: Dashboard Card konfigurieren
-
-Die Card wird automatisch als Lovelace-Ressource registriert, sobald die Integration geladen ist — keine manuelle Installation oder Ressourcen-Eintrag nötig.
+Die Card wird außerdem automatisch als Lovelace-Ressource registriert, sobald die Integration geladen ist — kein manueller Ressourcen-Eintrag nötig.
 
 Füge die Card in dein Dashboard ein (YAML-Modus):
 
@@ -191,17 +83,17 @@ Füge die Card in dein Dashboard ein (YAML-Modus):
 type: custom:divera-alarm-card
 
 # --- Pflicht: Entity-IDs ---
-# Passe diese an die Entity-Namen deiner HACS Integration an.
+# Passe diese an die Entity-Namen deiner Integration an.
 # Prüfe unter Entwicklerwerkzeuge → Zustände welche Entities existieren.
-alarm_entity: sensor.divera_last_alarm
-alarm_id_entity: sensor.divera_last_alarm_id
-status_entity: sensor.divera_status
+alarm_entity: binary_sensor.feuerwehr_musterstadt_active_alarm
+status_entity: select.feuerwehr_musterstadt_user_status
 
-# --- Fahrzeuge: Liste der Template-Sensor Entity-IDs ---
+# --- Fahrzeuge: Liste der Fahrzeug-Entity-IDs ---
+# Die Integration legt automatisch eine Entity pro Fahrzeug an.
 vehicle_entities:
-  - sensor.divera_fahrzeug_1
-  - sensor.divera_fahrzeug_2
-  - sensor.divera_fahrzeug_3
+  - sensor.feuerwehr_musterstadt_vehicle_status_hlf20
+  - sensor.feuerwehr_musterstadt_vehicle_status_tlf3000
+  - sensor.feuerwehr_musterstadt_vehicle_status_rw
 
 # --- Anzeige-Optionen ---
 title: "DIVERA 24/7"
@@ -215,7 +107,7 @@ theme: dark # 'dark' oder 'light'
 
 ---
 
-## Schritt 4: Automationen (optional)
+## Schritt 3: Automationen (optional)
 
 ### Alarm-Benachrichtigung auf dem Handy
 
@@ -224,18 +116,15 @@ automation:
   - alias: "Divera Alarm Notification"
     trigger:
       - platform: state
-        entity_id: sensor.divera_last_alarm
-    condition:
-      - condition: template
-        value_template: >
-          {{ trigger.to_state.state not in ['unavailable', 'unknown', 'idle', '', 'None'] }}
+        entity_id: binary_sensor.feuerwehr_musterstadt_active_alarm
+        to: "on"
     action:
       - service: notify.mobile_app_dein_handy
         data:
           title: "🚒 ALARM"
           message: >
-            {{ state_attr('sensor.divera_last_alarm', 'title') }}
-            — {{ state_attr('sensor.divera_last_alarm', 'address') }}
+            {{ state_attr('binary_sensor.feuerwehr_musterstadt_active_alarm', 'title') }}
+            — {{ state_attr('binary_sensor.feuerwehr_musterstadt_active_alarm', 'address') }}
           data:
             priority: high
             channel: alarm
@@ -249,12 +138,8 @@ automation:
   - alias: "Divera Alarm Light"
     trigger:
       - platform: state
-        entity_id: sensor.divera_last_alarm
-    condition:
-      - condition: template
-        value_template: >
-          {{ trigger.to_state.state not in ['unavailable', 'unknown', 'idle', '', 'None']
-             and not state_attr('sensor.divera_last_alarm', 'closed') }}
+        entity_id: binary_sensor.feuerwehr_musterstadt_active_alarm
+        to: "on"
     action:
       - service: light.turn_on
         target:
@@ -272,16 +157,36 @@ automation:
 
 ## Entity-Mapping Referenz
 
-Da die Entity-Benennung von der Integration-Version und den Einstellungen abhängt, hier eine Übersicht zur Identifikation:
+Da die Entity-Benennung vom Einheitsnamen abhängt, hier eine Übersicht zur Identifikation:
 
-| Funktion        | Typischer Entity-Name         | Wo prüfen                                        |
-| --------------- | ----------------------------- | ------------------------------------------------ |
-| Letzter Alarm   | `sensor.divera_last_alarm`    | Entwicklerwerkzeuge → Zustände → "divera" suchen |
-| Alarm-ID        | `sensor.divera_last_alarm_id` | ditto                                            |
-| Eigener Status  | `sensor.divera_status`        | ditto                                            |
-| Fahrzeug (REST) | `sensor.divera_fahrzeug_X`    | Definiert in deiner `configuration.yaml`         |
+| Funktion              | Entity-Platform  | Typischer Entity-Name                              | Wo prüfen                                        |
+| --------------------- | ---------------- | -------------------------------------------------- | ------------------------------------------------ |
+| Aktiver Alarm         | `binary_sensor`  | `binary_sensor.*_active_alarm`                     | Entwicklerwerkzeuge → Zustände → "divera" suchen |
+| Letzter Alarm (Titel) | `sensor`         | `sensor.*_last_alarm`                              | ditto                                            |
+| Letzte Neuigkeit      | `sensor`         | `sensor.*_last_news`                               | ditto                                            |
+| Fahrzeugstatus        | `sensor`         | `sensor.*_vehicle_status_<fahrzeugname>`           | ditto                                            |
+| Eigener Status        | `select`         | `select.*_user_status`                             | ditto                                            |
+| Kalender              | `calendar`       | `calendar.*_events`                                | ditto                                            |
 
-> **Wichtig:** Die Entity-Namen der HACS-Integration können je nach Version und Einheit variieren. Prüfe immer unter **Entwicklerwerkzeuge → Zustände** nach der Ersteinrichtung, welche Entities tatsächlich angelegt wurden, und passe die Card-Konfiguration entsprechend an.
+> **Wichtig:** Ersetze `*` durch den slugifizierten Einheitsnamen. Prüfe immer unter **Entwicklerwerkzeuge → Zustände** nach der Ersteinrichtung, welche Entities tatsächlich angelegt wurden, und passe die Card-Konfiguration entsprechend an.
+
+### Alarm-Entity Attribute
+
+Das `binary_sensor.*_active_alarm` stellt folgende Attribute bereit (wenn ein Alarm vorhanden ist):
+
+| Attribut              | Beschreibung                          |
+| --------------------- | ------------------------------------- |
+| `title`               | Alarmstichwort                        |
+| `text`                | Alarmtext / Einsatzmeldung            |
+| `address`             | Einsatzadresse                        |
+| `latitude`            | Breitengrad des Einsatzorts           |
+| `longitude`           | Längengrad des Einsatzorts            |
+| `priority`            | `true` = hohe Priorität              |
+| `closed`              | `true` = Einsatz abgeschlossen       |
+| `date`                | Alarmierungszeitpunkt                 |
+| `id`                  | Interne Alarm-ID                      |
+| `groups`              | Alarmierte Gruppen                    |
+| `answered`            | Eigene Rückmeldung                    |
 
 ---
 
@@ -290,14 +195,14 @@ Da die Entity-Benennung von der Integration-Version und den Einstellungen abhän
 **Integration zeigt keine Entities:**
 Prüfe den Access-Key unter `https://www.divera247.com/api/v2/pull/all?accesskey=DEIN-KEY` im Browser. Ist die Antwort ein gültiges JSON mit `"success": true`?
 
-**Fahrzeug-Sensoren zeigen "unbekannt":**
-Die API gibt Fahrzeuge als Array zurück. Prüfe die Indexierung — wenn du 5 Fahrzeuge hast, brauchst du Indices `[0]` bis `[4]`.
+**Keine Fahrzeug-Entities:**
+Die Integration erstellt Fahrzeug-Entities automatisch beim ersten Datenabruf. Starte Home Assistant neu und prüfe danach die Zustände.
 
 **Karte zeigt nichts:**
-Die Karte benötigt `lat` und `lng` Attribute im Alarm-Entity. Diese sind erst ab der ALARM-Version von Divera verfügbar (nicht FREE).
+Die Karte benötigt `latitude` und `longitude` Attribute im Alarm-Entity. Diese sind erst ab der ALARM-Version von Divera verfügbar (nicht FREE).
 
 **Update-Intervall zu langsam:**
-Die HACS Integration pollt standardmäßig alle 60 Sekunden. Für schnelleres Polling kannst du eine Automation erstellen, die `homeassistant.update_entity` häufiger aufruft.
+Die HACS Integration pollt standardmäßig alle 60 Sekunden. Das Intervall lässt sich in den Integrationsoptionen (Einstellungen → Geräte & Dienste → Divera 24/7 → Konfigurieren) anpassen.
 
 ---
 
