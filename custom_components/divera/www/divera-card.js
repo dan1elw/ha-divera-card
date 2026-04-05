@@ -559,10 +559,10 @@ class DiveraAlarmCard extends HTMLElement {
     // Fall back to text mapping for German labels
     const map = {
       "frei Funk": 1,
-      "Einsatzbereit": 2,
+      Einsatzbereit: 2,
       "auf Anfahrt": 3,
       "am Einsatzort": 4,
-      "Sprechwunsch": 5,
+      Sprechwunsch: 5,
       "nicht einsatzbereit": 6,
     };
     return map[(stateStr || "").toLowerCase()] || 0;
