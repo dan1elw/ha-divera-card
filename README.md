@@ -10,6 +10,8 @@
 
 ## Overview
 
+![divera logo](divera247_long.png)
+
 The Divera 24/7 Home Assistant Custom Integration allows you to integrate your Divera 24/7
 system with your Home Assistant setup. With this integration, you can monitor and control your Divera 24/7
 devices directly from your Home Assistant dashboard, enabling seamless automation and enhanced security for your home or office.
