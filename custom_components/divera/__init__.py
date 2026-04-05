@@ -71,7 +71,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: DiveraConfigEntry):
 
     if not divera_hass_data.get("_card_registered"):
         try:
-            from homeassistant.components.frontend import async_register_extra_module_url
+            from homeassistant.components.frontend import (
+                async_register_extra_module_url,
+            )
 
             async_register_extra_module_url(hass, _CARD_URL.format(DOMAIN))
             divera_hass_data["_card_registered"] = True
