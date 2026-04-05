@@ -4,7 +4,7 @@ from typing import Any
 
 from voluptuous import Optional, Required, Schema
 
-from homeassistant.config_entries import HANDLERS, ConfigEntry, ConfigFlow
+from homeassistant.config_entries import ConfigEntry, ConfigFlow
 from homeassistant.data_entry_flow import FlowHandler
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.selector import (
@@ -89,8 +89,7 @@ class DiveraFlow(FlowHandler):
         return self.async_create_entry(title=title, data=self._data)
 
 
-@HANDLERS.register(DOMAIN)
-class DiveraConfigFlow(DiveraFlow, ConfigFlow):
+class DiveraConfigFlow(DiveraFlow, ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Divera integration.
 
     This class manages the configuration flow for setting up the Divera integration.
