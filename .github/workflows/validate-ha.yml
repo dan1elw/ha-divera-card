@@ -1,31 +1,36 @@
-name: "Validate"
+name: Validate
 
 on: # yamllint disable-line rule:truthy
-  push:
-    branches:
-      - develop
-      - feat/*
   pull_request:
     branches:
+      - main
       - develop
+      - release
       - feat/*
 
 jobs:
   hassfest: # https://developers.home-assistant.io/blog/2020/04/16/hassfest
-    name: "Hassfest Validation"
-    runs-on: "ubuntu-latest"
+    name: Hassfest
+    runs-on: ubuntu-latest
+    concurrency:
+      group: hassfest-${{ github.head_ref }}
+      cancel-in-progress: true
     steps:
-      - name: "Checkout the repository"
-        uses: "actions/checkout@v4.2.2"
-      - name: "Run hassfest validation"
-        uses: "home-assistant/actions/hassfest@master"
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+      - name: Run hassfest validation
+        uses: home-assistant/actions/hassfest@master # official ref, not versioned
+
   hacs: # https://github.com/hacs/action
-    name: "HACS Validation"
-    runs-on: "ubuntu-latest"
+    name: HACS
+    runs-on: ubuntu-latest
+    concurrency:
+      group: hacs-${{ github.head_ref }}
+      cancel-in-progress: true
     steps:
-      - name: "Checkout the repository"
-        uses: "actions/checkout@v4.2.2"
-      - name: "Run HACS validation"
-        uses: "hacs/action@main"
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+      - name: Run HACS validation
+        uses: hacs/action@main # official ref, not versioned
         with:
-          category: "integration"
+          category: integration

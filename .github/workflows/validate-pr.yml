@@ -1,14 +1,18 @@
 name: Pull Request
 
 on: # yamllint disable-line rule:truthy
-  pull_request_target:
+  pull_request:
     types:
       - opened
       - edited
       - synchronize
 
+concurrency:
+  group: pr-title-${{ github.head_ref }}
+  cancel-in-progress: true
+
 jobs:
-  main:
+  validate-title:
     name: Validate PR title
     runs-on: ubuntu-latest
     steps:
