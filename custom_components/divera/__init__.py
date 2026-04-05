@@ -62,12 +62,12 @@ async def _async_register_card(hass: HomeAssistant) -> None:
 
     try:
         from homeassistant.components.frontend import async_register_extra_module_url
-
+    except ImportError:
+        LOGGER.debug("async_register_extra_module_url not available, trying fallback")
+    else:
         async_register_extra_module_url(hass, card_url)
         LOGGER.debug("Registered Lovelace card via async_register_extra_module_url")
         return
-    except ImportError:
-        LOGGER.debug("async_register_extra_module_url not available, trying fallback")
 
     # Fallback: add directly to Lovelace resource storage (storage mode only)
     try:
