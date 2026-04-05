@@ -3,9 +3,9 @@
   "name": "Divera 24/7",
   "codeowners": ["@dan1elw"],
   "config_flow": true,
+  "dependencies": ["http"],
   "documentation": "https://github.com/dan1elw/ha-divera-card",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/dan1elw/ha-divera-card/issues",
-  "homeassistant": "2024.1.0",
-  "version": "1.1.5"
+  "version": "1.1.1"
 }
