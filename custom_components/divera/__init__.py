@@ -3,6 +3,8 @@
 import asyncio
 from pathlib import Path
 
+from homeassistant.components.http import StaticPathConfig
+
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_API_KEY, CONF_NAME, Platform
 from homeassistant.core import HomeAssistant
@@ -27,10 +29,14 @@ _CARD_URL = "/custom_components/{}/www/divera-card.js"
 
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     """Register the Divera dashboard card as a Lovelace resource."""
-    hass.http.register_static_path(
-        _CARD_URL.format(DOMAIN),
-        str(Path(__file__).parent / "www" / "divera-card.js"),
-        cache_headers=False,
+    await hass.http.async_register_static_paths(
+        [
+            StaticPathConfig(
+                _CARD_URL.format(DOMAIN),
+                str(Path(__file__).parent / "www" / "divera-card.js"),
+                cache_headers=False,
+            )
+        ]
     )
     try:
         from homeassistant.components.frontend import async_register_extra_module_url
