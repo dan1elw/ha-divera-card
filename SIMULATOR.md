@@ -1,0 +1,98 @@
+# DIVERA Card Simulator
+
+A standalone browser-based preview tool for the `divera-alarm-card` Lovelace card.
+Use it to inspect how the card looks and behaves **without a running Home Assistant instance**.
+
+## Opening the simulator
+
+No build step or local server is required. Open the file directly in any modern browser:
+
+```bash
+xdg-open simulator.html        # Linux
+open simulator.html             # macOS
+# or drag the file into your browser
+```
+
+> The map section requires an internet connection to load OpenStreetMap tiles.
+> All other card sections work fully offline.
+
+## How it works
+
+The simulator loads the real card implementation from
+`custom_components/divera/www/divera-card.js` via a `<script>` tag on every page load.
+It then creates a mock Home Assistant `hass` object with pre-defined entity states and
+passes it to the card element — exactly as Home Assistant would at runtime.
+
+**Changes to `divera-card.js` are reflected immediately after a browser refresh.**
+No build step, no caching, no snapshot.
+
+## UI overview
+
+### Scenarios
+
+Four preset alarm states that populate the mock entity data:
+
+| Button | Description |
+|---|---|
+| Kein Einsatz | No active alarm — idle/ready state |
+| Brand in Gebäude | High-priority alarm with address and map coordinates |
+| Hilfeleistung | Standard-priority alarm (VU) with address and coordinates |
+| Einsatz (kein Ort) | Active alarm without GPS coordinates (map placeholder shown) |
+
+### Display toggles
+
+| Toggle | Effect |
+|---|---|
+| Karte anzeigen | Shows/hides the embedded OpenStreetMap section |
+| Fahrzeuge anzeigen | Shows/hides the vehicle FMS grid |
+| Eigener Status | Shows/hides the personal availability bar |
+| Helles Theme | Switches between dark (default) and light theme |
+
+### Configuration inputs
+
+- **Kartenname** — sets the card title (top-left, default: `DIVERA 24/7`)
+- **Einheit** — sets the unit name shown below the title (default: `FF Musterstadt`)
+
+### Eigener Status (own availability)
+
+Dropdown to switch between the five Divera status values:
+
+| Value | Label |
+|---|---|
+| 0 | Nicht gesetzt |
+| 1 | Auf Wache |
+| 2 | Verfügbar |
+| 3 | Nicht verfügbar |
+| 4 | Bedingt verfügbar |
+
+### Fahrzeug-FMS
+
+Individual FMS (Fahrzeugmanagement-System) state selector per vehicle.
+The colored dot updates in the sidebar immediately when the selection changes.
+
+| FMS | Meaning | Color |
+|---|---|---|
+| S1 | frei Funk | Green |
+| S2 | auf Wache | Green |
+| S3 | Einsatz | Orange |
+| S4 | am Einsatzort | Red |
+| S5 | Sprechwunsch | Blue |
+| S6 | nicht einsatzbereit | Grey |
+
+## Mock vehicle fleet
+
+The simulator includes four example vehicles:
+
+| Entity ID | Kurzname | Typ |
+|---|---|---|
+| `sensor.v_hlf` | HLF20/16 | Hilfeleistungslöschfahrzeug |
+| `sensor.v_tlf` | TLF3000 | Tanklöschfahrzeug |
+| `sensor.v_rw` | RW | Rüstwagen |
+| `sensor.v_elw` | ELW | Einsatzleitwagen |
+
+## Development workflow
+
+1. Edit `custom_components/divera/www/divera-card.js`
+2. Refresh the simulator in the browser
+3. Use the scenario and toggle controls to verify all states look correct
+4. Merge / deploy when satisfied
