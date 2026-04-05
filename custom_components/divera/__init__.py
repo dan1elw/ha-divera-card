@@ -51,6 +51,49 @@ PLATFORMS = [
 type DiveraConfigEntry = ConfigEntry[DiveraRuntimeData]
 
 
+async def _async_register_card(hass: HomeAssistant) -> None:
+    """Register divera-card.js as a Lovelace frontend resource.
+
+    Tries async_register_extra_module_url first (HA 2022.7+), then falls back
+    to writing directly into the Lovelace resource storage so the card is
+    available without any manual configuration step.
+    """
+    card_url = _CARD_URL.format(DOMAIN)
+
+    try:
+        from homeassistant.components.frontend import (
+            async_register_extra_module_url,
+        )
+
+        async_register_extra_module_url(hass, card_url)
+        LOGGER.debug("Registered Lovelace card via async_register_extra_module_url")
+        return
+    except ImportError:
+        LOGGER.debug("async_register_extra_module_url not available, trying fallback")
+
+    # Fallback: add directly to Lovelace resource storage (storage mode only)
+    try:
+        lovelace = hass.data.get("lovelace", {})
+        resources = lovelace.get("resources")
+        if resources is not None:
+            existing = [r["url"] for r in resources.async_items()]
+            if card_url not in existing:
+                await resources.async_create_item(
+                    {"res_type": "module", "url": card_url}
+                )
+                LOGGER.debug("Registered Lovelace card via resource storage")
+            return
+    except Exception as err:  # noqa: BLE001
+        LOGGER.debug("Lovelace resource storage fallback failed: %s", err)
+
+    LOGGER.warning(
+        "Could not auto-register the Divera card. "
+        "Add %s manually: Settings → Dashboards → ⋮ → Resources → "
+        "JavaScript module",
+        card_url,
+    )
+
+
 async def async_setup_entry(hass: HomeAssistant, entry: DiveraConfigEntry):
     """Set up Divera as config entry.
 
@@ -70,19 +113,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: DiveraConfigEntry):
     divera_hass_data[entry.entry_id] = {}
 
     if not divera_hass_data.get("_card_registered"):
-        try:
-            from homeassistant.components.frontend import (
-                async_register_extra_module_url,
-            )
-
-            async_register_extra_module_url(hass, _CARD_URL.format(DOMAIN))
-            divera_hass_data["_card_registered"] = True
-        except ImportError:
-            LOGGER.warning(
-                "async_register_extra_module_url not available, "
-                "please add %s as a Lovelace resource manually",
-                _CARD_URL.format(DOMAIN),
-            )
+        await _async_register_card(hass)
+        divera_hass_data["_card_registered"] = True
 
     websession = async_get_clientsession(hass)
     tasks = []
