@@ -26,9 +26,8 @@ class DiveraAlarmCard extends HTMLElement {
   setConfig(config) {
     this._config = {
       // Entity IDs — adjust to match your integration's entity naming
-      alarm_entity: config.alarm_entity || "sensor.divera_last_alarm",
-      alarm_id_entity: config.alarm_id_entity || "sensor.divera_last_alarm_id",
-      status_entity: config.status_entity || "sensor.divera_status",
+      alarm_entity: config.alarm_entity,
+      status_entity: config.status_entity,
       vehicle_entities: config.vehicle_entities || [],
       // Display options
       title: config.title || "DIVERA 24/7",
@@ -506,38 +505,25 @@ class DiveraAlarmCard extends HTMLElement {
     const hass = this._hass;
     const alarmState = hass.states[cfg.alarm_entity];
 
-    if (
-      !alarmState ||
-      alarmState.state === "unavailable" ||
-      alarmState.state === "unknown"
-    ) {
+    if (!alarmState || alarmState.state === "unavailable") {
       return { active: false };
     }
 
     const attrs = alarmState.attributes || {};
-    const state = alarmState.state;
-
-    // The integration exposes alarm data as sensor attributes
-    const isActive =
-      state !== "" &&
-      state !== "idle" &&
-      state !== "unavailable" &&
-      state !== "unknown" &&
-      state !== "None" &&
-      !attrs.closed;
+    const isActive = alarmState.state === "on";
 
     return {
       active: isActive,
-      title: attrs.title || state || "",
-      text: attrs.text || attrs.message || "",
+      title: attrs.title || "",
+      text: attrs.text || "",
       address: attrs.address || "",
-      lat: attrs.lat || attrs.latitude || null,
-      lng: attrs.lng || attrs.longitude || null,
+      lat: attrs.latitude ? parseFloat(attrs.latitude) : null,
+      lng: attrs.longitude ? parseFloat(attrs.longitude) : null,
       priority: attrs.priority !== undefined ? attrs.priority : true,
       closed: attrs.closed || false,
-      timestamp: attrs.date || attrs.ts_create || attrs.timestamp || null,
-      id: attrs.id || attrs.foreign_id || "",
-      groups: attrs.groups || attrs.group || [],
+      timestamp: attrs.date || attrs.ts_create || null,
+      id: attrs.id || "",
+      groups: attrs.groups || [],
     };
   }
 

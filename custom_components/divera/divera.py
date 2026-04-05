@@ -351,6 +351,7 @@ class DiveraClient:
         tz = get_default_time_zone()
 
         return {
+            "title": alarm.get("title"),
             "id": alarm.get("id"),
             "foreign_id": alarm.get("foreign_id"),
             "text": alarm.get("text"),
