@@ -61,9 +61,7 @@ async def _async_register_card(hass: HomeAssistant) -> None:
     card_url = _CARD_URL.format(DOMAIN)
 
     try:
-        from homeassistant.components.frontend import (
-            async_register_extra_module_url,
-        )
+        from homeassistant.components.frontend import async_register_extra_module_url
 
         async_register_extra_module_url(hass, card_url)
         LOGGER.debug("Registered Lovelace card via async_register_extra_module_url")
