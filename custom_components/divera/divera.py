@@ -15,10 +15,16 @@ from .const import (
     DIVERA_BASE_URL,
     LOGGER,
     PARAM_ACCESSKEY,
+    PARAM_ALARM,
+    PARAM_CLUSTER,
+    PARAM_EVENT,
     PARAM_LOCALMONITOR,
     PARAM_MONITOR,
+    PARAM_NEWS,
+    PARAM_STATUS,
     PARAM_STATUSPLAN,
     PARAM_UCR,
+    PARAM_USER,
     VERSION_ALARM,
     VERSION_FREE,
     VERSION_PRO,
@@ -62,7 +68,13 @@ class DiveraClient:
         time = int(datetime.now().timestamp())
         params = {
             PARAM_ACCESSKEY: self.__accesskey,
+            PARAM_USER: time,
+            PARAM_ALARM: time,
+            PARAM_NEWS: time,
+            PARAM_EVENT: time,
+            PARAM_STATUS: time,
             PARAM_STATUSPLAN: time,
+            PARAM_CLUSTER: time,
             PARAM_LOCALMONITOR: time,
             PARAM_MONITOR: time,
         }
@@ -202,12 +214,17 @@ class DiveraClient:
             KeyError: If the required keys are not found in the data dictionary.
 
         """
-        data = {}
-        timestamp = self.__data["data"]["status"]["status_set_date"]
-        data["timestamp"] = datetime.fromtimestamp(
-            timestamp, tz=get_default_time_zone()
-        )
-        data["id"] = self.__data["data"]["status"]["status_id"]
+        status = self.__data["data"]["status"]
+        tz = get_default_time_zone()
+        reset_date = status.get("status_reset_date")
+        data = {
+            "timestamp": datetime.fromtimestamp(status["status_set_date"], tz=tz),
+            "id": status["status_id"],
+            "note": status.get("note"),
+            "vehicle": status.get("vehicle"),
+            "status_reset_date": datetime.fromtimestamp(reset_date, tz=tz) if reset_date else None,
+            "status_reset_id": status.get("status_reset_id"),
+        }
         return data
 
     def get_last_event(self) -> CalendarEvent | None:
@@ -339,13 +356,16 @@ class DiveraClient:
                     name = f"{cug.get('name', '')} ({cluster_name})"
                     groups.append(name)
 
+        ts_close = alarm.get("ts_close")
+        ts_create = alarm.get("ts_create")
+        ts_update = alarm.get("ts_update")
+        tz = get_default_time_zone()
+
         return {
             "id": alarm.get("id"),
             "foreign_id": alarm.get("foreign_id"),
             "text": alarm.get("text"),
-            "date": datetime.fromtimestamp(
-                alarm.get("date"), tz=get_default_time_zone()
-            ),
+            "date": datetime.fromtimestamp(alarm.get("date"), tz=tz),
             "address": alarm.get("address"),
             "latitude": str(alarm.get("lat")),
             "longitude": str(alarm.get("lng")),
@@ -355,6 +375,28 @@ class DiveraClient:
             "new": alarm.get("new"),
             "self_addressed": alarm.get("ucr_self_addressed"),
             "answered": self.get_answered_state(alarm),
+            "scene_object": alarm.get("scene_object"),
+            "caller": alarm.get("caller"),
+            "patient": alarm.get("patient"),
+            "remark": alarm.get("remark"),
+            "units": alarm.get("units"),
+            "destination": alarm.get("destination"),
+            "destination_address": alarm.get("destination_address"),
+            "destination_latitude": str(alarm.get("destination_lat")) if alarm.get("destination_lat") is not None else None,
+            "destination_longitude": str(alarm.get("destination_lng")) if alarm.get("destination_lng") is not None else None,
+            "additional_text_1": alarm.get("additional_text_1"),
+            "additional_text_2": alarm.get("additional_text_2"),
+            "additional_text_3": alarm.get("additional_text_3"),
+            "report": alarm.get("report"),
+            "vehicles": alarm.get("vehicle", []),
+            "self_status": self.get_state_name_by_id(alarm["ucr_self_status_id"]) if alarm.get("ucr_self_status_id") else None,
+            "self_note": alarm.get("ucr_self_note"),
+            "count_recipients": alarm.get("count_recipients"),
+            "count_read": alarm.get("count_read"),
+            "ts_close": datetime.fromtimestamp(ts_close, tz=tz) if ts_close else None,
+            "ts_create": datetime.fromtimestamp(ts_create, tz=tz) if ts_create else None,
+            "ts_update": datetime.fromtimestamp(ts_update, tz=tz) if ts_update else None,
+            "custom": alarm.get("custom", []),
         }
 
     def get_answered_state(self, alarm):
@@ -434,18 +476,24 @@ class DiveraClient:
             self.get_group_name_by_id(group_id) for group_id in news.get("group", [])
         ]
 
+        ts_create = news.get("ts_create")
+        ts_update = news.get("ts_update")
+        tz = get_default_time_zone()
+
         return {
             "id": news.get("id"),
+            "foreign_id": news.get("foreign_id"),
+            "author_id": news.get("author_id"),
             "text": news.get("text"),
-            "date": datetime.fromtimestamp(
-                news.get("date"), tz=get_default_time_zone()
-            ),
+            "date": datetime.fromtimestamp(news.get("date"), tz=tz),
             "address": news.get("address"),
-            "latitude": str(news.get("lat")),
-            "longitude": str(news.get("lng")),
             "groups": groups,
             "new": news.get("new"),
             "self_addressed": news.get("ucr_self_addressed"),
+            "count_recipients": news.get("count_recipients"),
+            "count_read": news.get("count_read"),
+            "ts_create": datetime.fromtimestamp(ts_create, tz=tz) if ts_create else None,
+            "ts_update": datetime.fromtimestamp(ts_update, tz=tz) if ts_update else None,
         }
 
     def get_vehicle_id_list(self):
@@ -456,6 +504,22 @@ class DiveraClient:
 
         """
         return list(self.__data["data"]["cluster"]["vehicle"].keys())
+
+    def get_fms_status_name(self, fmsstatus_id) -> str | None:
+        """Return the name of an FMS vehicle status by its ID.
+
+        Args:
+            fmsstatus_id: The FMS status ID (int or str).
+
+        Returns:
+            str | None: The name of the FMS status, or None if not found.
+
+        """
+        fms_status = self.__data["data"]["cluster"].get("fms_status", {})
+        entry = fms_status.get(str(fmsstatus_id))
+        if entry:
+            return entry.get("name") or entry.get("title")
+        return None
 
     def get_vehicle_state(self, vehicle_id: str) -> dict:
         """Retrieve the state of a vehicle by its ID.
@@ -497,6 +561,7 @@ class DiveraClient:
         """
         try:
             vehicle_status = self.__data["data"]["cluster"]["vehicle"][vehicle_id]
+            fmsstatus_id = vehicle_status.get("fmsstatus_id")
             fmsstatus_timestamp = datetime.fromtimestamp(
                 vehicle_status.get("fmsstatus_ts"), tz=get_default_time_zone()
             )
@@ -504,6 +569,8 @@ class DiveraClient:
                 "fullname": vehicle_status.get("fullname"),
                 "shortname": vehicle_status.get("shortname"),
                 "name": vehicle_status.get("name"),
+                "fmsstatus_id": fmsstatus_id,
+                "fmsstatus_name": self.get_fms_status_name(fmsstatus_id),
                 "fmsstatus_note": vehicle_status.get("fmsstatus_note"),
                 "fmsstatus_ts": fmsstatus_timestamp,
                 "latitude": vehicle_status.get("lat"),
@@ -627,6 +694,24 @@ class DiveraClient:
 
         """
         return [self.get_cluster_name_from_ucr(id) for id in ucr_ids]
+
+    def get_ucr_info(self, ucr_id) -> dict:
+        """Retrieve name, shortname and unread counters for a UCR.
+
+        Args:
+            ucr_id: The UCR ID (int or str).
+
+        Returns:
+            dict: Contains name, shortname, new_messages, new_alarms.
+
+        """
+        ucr = self.__data["data"]["ucr"].get(str(ucr_id), {})
+        return {
+            "name": ucr.get("name"),
+            "shortname": ucr.get("shortname"),
+            "new_messages": ucr.get("new_messages", 0),
+            "new_alarms": ucr.get("new_alarms", 0),
+        }
 
     def get_cluster_name_from_ucr(self, ucr_id) -> str:
         """Retrieve the name of the cluster associated with the given User Cluster Relation (UCR) ID.
