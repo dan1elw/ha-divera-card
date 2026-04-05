@@ -4,14 +4,11 @@ from datetime import timedelta
 
 from aiohttp import ClientSession
 
-from custom_components.divera.const import DEFAULT_SCAN_INTERVAL, LOGGER
-from custom_components.divera.divera import (
-    DiveraAuthError,
-    DiveraClient,
-    DiveraConnectionError,
-)
 from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+
+from .const import DEFAULT_SCAN_INTERVAL, LOGGER
+from .divera import DiveraAuthError, DiveraClient, DiveraConnectionError
 
 
 class DiveraCoordinator(DataUpdateCoordinator):
