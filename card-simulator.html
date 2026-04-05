@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DIVERA Card Simulator</title>
-  <script src="custom_components/divera/www/divera-card.js"></script>
+  <script src="./custom_components/divera/www/divera-card.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -303,8 +303,8 @@
     const vehicleFms = Object.fromEntries(VEHICLES.map(v => [v.id, v.fms]));
 
     const FMS_LABELS = {
-      0: '–', 1: 'S1 · frei Funk', 2: 'S2 · auf Wache',
-      3: 'S3 · Einsatz', 4: 'S4 · am Einsatzort',
+      0: '–', 1: 'S1 · frei Funk', 2: 'S2 · Einsatzbereit',
+      3: 'S3 · auf Anfahrt', 4: 'S4 · am Einsatzort',
       5: 'S5 · Sprechwunsch', 6: 'S6 · nicht bereit',
     };
     const FMS_COLORS = { 1:'#43a047',2:'#43a047',3:'#fb8c00',4:'#e53935',5:'#1e88e5',6:'#78909c' };

@@ -624,8 +624,8 @@ class DiveraAlarmCard extends HTMLElement {
   _renderVehicles(vehicles) {
     const fmsLabels = {
       1: 'S1 · frei Funk',
-      2: 'S2 · auf Wache',
-      3: 'S3 · Einsatz',
+      2: 'S2 · Einsatzbereit',
+      3: 'S3 · auf Anfahrt',
       4: 'S4 · am Einsatzort',
       5: 'S5 · Sprechwunsch',
       6: 'S6 · nicht einsatzbereit',
