@@ -3,7 +3,6 @@
 import asyncio
 from pathlib import Path
 
-from homeassistant.components.frontend import async_register_extra_module_url
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_API_KEY, CONF_NAME, Platform
 from homeassistant.core import HomeAssistant
@@ -33,7 +32,16 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
         str(Path(__file__).parent / "www" / "divera-card.js"),
         cache_headers=False,
     )
-    async_register_extra_module_url(hass, _CARD_URL.format(DOMAIN))
+    try:
+        from homeassistant.components.frontend import async_register_extra_module_url
+
+        async_register_extra_module_url(hass, _CARD_URL.format(DOMAIN))
+    except ImportError:
+        LOGGER.warning(
+            "async_register_extra_module_url not available, "
+            "please add %s as a Lovelace resource manually",
+            _CARD_URL.format(DOMAIN),
+        )
     return True
 
 
