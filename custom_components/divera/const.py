@@ -33,9 +33,13 @@ CONF_BASE_URL: str = "base_url"
 
 PARAM_ACCESSKEY: str = "accesskey"
 PARAM_UCR: str = "ucr"
+PARAM_USER: str = "ts_user"
+PARAM_ALARM: str = "ts_alarm"
 PARAM_NEWS: str = "ts_news"
 PARAM_EVENT: str = "ts_event"
+PARAM_STATUS: str = "ts_status"
 PARAM_STATUSPLAN: str = "ts_statusplan"
+PARAM_CLUSTER: str = "ts_cluster"
 PARAM_LOCALMONITOR: str = "ts_localmonitor"
 PARAM_MONITOR: str = "ts_monitor"
 
