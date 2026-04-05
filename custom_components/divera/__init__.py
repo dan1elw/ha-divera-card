@@ -4,7 +4,6 @@ import asyncio
 from pathlib import Path
 
 from homeassistant.components.http import StaticPathConfig
-
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_API_KEY, CONF_NAME, Platform
 from homeassistant.core import HomeAssistant
@@ -28,7 +27,7 @@ _CARD_URL = "/custom_components/{}/www/divera-card.js"
 
 
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:
-    """Register the Divera dashboard card as a Lovelace resource."""
+    """Register the Divera dashboard card static path."""
     await hass.http.async_register_static_paths(
         [
             StaticPathConfig(
@@ -38,16 +37,6 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
             )
         ]
     )
-    try:
-        from homeassistant.components.frontend import async_register_extra_module_url
-
-        async_register_extra_module_url(hass, _CARD_URL.format(DOMAIN))
-    except ImportError:
-        LOGGER.warning(
-            "async_register_extra_module_url not available, "
-            "please add %s as a Lovelace resource manually",
-            _CARD_URL.format(DOMAIN),
-        )
     return True
 
 
@@ -65,6 +54,9 @@ type DiveraConfigEntry = ConfigEntry[DiveraRuntimeData]
 async def async_setup_entry(hass: HomeAssistant, entry: DiveraConfigEntry):
     """Set up Divera as config entry.
 
+    Also registers the Lovelace card resource on first entry setup,
+    after the frontend component is guaranteed to be loaded.
+
     Args:
         hass (HomeAssistant): The Home Assistant instance.
         entry (ConfigEntry): The config entry for Divera.
@@ -76,6 +68,21 @@ async def async_setup_entry(hass: HomeAssistant, entry: DiveraConfigEntry):
 
     divera_hass_data = hass.data.setdefault(DOMAIN, {})
     divera_hass_data[entry.entry_id] = {}
+
+    if not divera_hass_data.get("_card_registered"):
+        try:
+            from homeassistant.components.frontend import (
+                async_register_extra_module_url,
+            )
+
+            async_register_extra_module_url(hass, _CARD_URL.format(DOMAIN))
+            divera_hass_data["_card_registered"] = True
+        except ImportError:
+            LOGGER.warning(
+                "async_register_extra_module_url not available, "
+                "please add %s as a Lovelace resource manually",
+                _CARD_URL.format(DOMAIN),
+            )
 
     websession = async_get_clientsession(hass)
     tasks = []
