@@ -32,21 +32,21 @@ No build step, no caching, no snapshot.
 
 Four preset alarm states that populate the mock entity data:
 
-| Button | Description |
-|---|---|
-| Kein Einsatz | No active alarm — idle/ready state |
-| Brand in Gebäude | High-priority alarm with address and map coordinates |
-| Hilfeleistung | Standard-priority alarm (VU) with address and coordinates |
+| Button             | Description                                                  |
+| ------------------ | ------------------------------------------------------------ |
+| Kein Einsatz       | No active alarm — idle/ready state                           |
+| Brand in Gebäude   | High-priority alarm with address and map coordinates         |
+| Hilfeleistung      | Standard-priority alarm (VU) with address and coordinates    |
 | Einsatz (kein Ort) | Active alarm without GPS coordinates (map placeholder shown) |
 
 ### Display toggles
 
-| Toggle | Effect |
-|---|---|
-| Karte anzeigen | Shows/hides the embedded OpenStreetMap section |
-| Fahrzeuge anzeigen | Shows/hides the vehicle FMS grid |
-| Eigener Status | Shows/hides the personal availability bar |
-| Helles Theme | Switches between dark (default) and light theme |
+| Toggle             | Effect                                          |
+| ------------------ | ----------------------------------------------- |
+| Karte anzeigen     | Shows/hides the embedded OpenStreetMap section  |
+| Fahrzeuge anzeigen | Shows/hides the vehicle FMS grid                |
+| Eigener Status     | Shows/hides the personal availability bar       |
+| Helles Theme       | Switches between dark (default) and light theme |
 
 ### Configuration inputs
 
@@ -57,38 +57,38 @@ Four preset alarm states that populate the mock entity data:
 
 Dropdown to switch between the five Divera status values:
 
-| Value | Label |
-|---|---|
-| 0 | Nicht gesetzt |
-| 1 | Auf Wache |
-| 2 | Verfügbar |
-| 3 | Nicht verfügbar |
-| 4 | Bedingt verfügbar |
+| Value | Label             |
+| ----- | ----------------- |
+| 0     | Nicht gesetzt     |
+| 1     | Auf Wache         |
+| 2     | Verfügbar         |
+| 3     | Nicht verfügbar   |
+| 4     | Bedingt verfügbar |
 
 ### Fahrzeug-FMS
 
 Individual FMS (Fahrzeugmanagement-System) state selector per vehicle.
 The colored dot updates in the sidebar immediately when the selection changes.
 
-| FMS | Meaning | Color |
-|---|---|---|
-| S1 | frei Funk | Green |
-| S2 | auf Wache | Green |
-| S3 | Einsatz | Orange |
-| S4 | am Einsatzort | Red |
-| S5 | Sprechwunsch | Blue |
-| S6 | nicht einsatzbereit | Grey |
+| FMS | Meaning             | Color  |
+| --- | ------------------- | ------ |
+| S1  | frei Funk           | Green  |
+| S2  | auf Wache           | Green  |
+| S3  | Einsatz             | Orange |
+| S4  | am Einsatzort       | Red    |
+| S5  | Sprechwunsch        | Blue   |
+| S6  | nicht einsatzbereit | Grey   |
 
 ## Mock vehicle fleet
 
 The simulator includes four example vehicles:
 
-| Entity ID | Kurzname | Typ |
-|---|---|---|
+| Entity ID      | Kurzname | Typ                         |
+| -------------- | -------- | --------------------------- |
 | `sensor.v_hlf` | HLF20/16 | Hilfeleistungslöschfahrzeug |
-| `sensor.v_tlf` | TLF3000 | Tanklöschfahrzeug |
-| `sensor.v_rw` | RW | Rüstwagen |
-| `sensor.v_elw` | ELW | Einsatzleitwagen |
+| `sensor.v_tlf` | TLF3000  | Tanklöschfahrzeug           |
+| `sensor.v_rw`  | RW       | Rüstwagen                   |
+| `sensor.v_elw` | ELW      | Einsatzleitwagen            |
 
 ## Development workflow
 

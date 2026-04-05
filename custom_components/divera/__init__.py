@@ -23,7 +23,7 @@ from .coordinator import DiveraCoordinator
 from .data import DiveraRuntimeData
 from .divera import DiveraClient, DiveraError
 
-_CARD_URL = f"/custom_components/{{}}/www/divera-card.js"
+_CARD_URL = "/custom_components/{}/www/divera-card.js"
 
 
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:

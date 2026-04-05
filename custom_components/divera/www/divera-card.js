@@ -26,19 +26,19 @@ class DiveraAlarmCard extends HTMLElement {
   setConfig(config) {
     this._config = {
       // Entity IDs — adjust to match your integration's entity naming
-      alarm_entity: config.alarm_entity || 'sensor.divera_last_alarm',
-      alarm_id_entity: config.alarm_id_entity || 'sensor.divera_last_alarm_id',
-      status_entity: config.status_entity || 'sensor.divera_status',
+      alarm_entity: config.alarm_entity || "sensor.divera_last_alarm",
+      alarm_id_entity: config.alarm_id_entity || "sensor.divera_last_alarm_id",
+      status_entity: config.status_entity || "sensor.divera_status",
       vehicle_entities: config.vehicle_entities || [],
       // Display options
-      title: config.title || 'DIVERA 24/7',
-      unit_name: config.unit_name || 'Feuerwehr',
+      title: config.title || "DIVERA 24/7",
+      unit_name: config.unit_name || "Feuerwehr",
       show_map: config.show_map !== false,
       show_vehicles: config.show_vehicles !== false,
       show_status: config.show_status !== false,
       map_zoom: config.map_zoom || 15,
       // Theming
-      theme: config.theme || 'dark', // 'dark' or 'light'
+      theme: config.theme || "dark", // 'dark' or 'light'
     };
   }
 
@@ -47,7 +47,7 @@ class DiveraAlarmCard extends HTMLElement {
   }
 
   _initialize() {
-    this.attachShadow({ mode: 'open' });
+    this.attachShadow({ mode: "open" });
     this.shadowRoot.innerHTML = `
       <style>
         ${this._getStyles()}
@@ -64,19 +64,21 @@ class DiveraAlarmCard extends HTMLElement {
   }
 
   _getStyles() {
-    const isDark = this._config.theme === 'dark';
+    const isDark = this._config.theme === "dark";
     return `
       @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;600&display=swap');
 
       :host {
-        --dv-bg: ${isDark ? '#0f1419' : '#f8f9fb'};
-        --dv-surface: ${isDark ? '#1a2029' : '#ffffff'};
-        --dv-surface-raised: ${isDark ? '#222a35' : '#f0f2f5'};
-        --dv-text: ${isDark ? '#e8ecf1' : '#1a2029'};
-        --dv-text-muted: ${isDark ? '#7a8a9e' : '#6b7a8d'};
-        --dv-border: ${isDark ? '#2a3444' : '#e0e4ea'};
+        --dv-bg: ${isDark ? "#0f1419" : "#f8f9fb"};
+        --dv-surface: ${isDark ? "#1a2029" : "#ffffff"};
+        --dv-surface-raised: ${isDark ? "#222a35" : "#f0f2f5"};
+        --dv-text: ${isDark ? "#e8ecf1" : "#1a2029"};
+        --dv-text-muted: ${isDark ? "#7a8a9e" : "#6b7a8d"};
+        --dv-border: ${isDark ? "#2a3444" : "#e0e4ea"};
         --dv-red: #e53935;
-        --dv-red-glow: ${isDark ? 'rgba(229, 57, 53, 0.25)' : 'rgba(229, 57, 53, 0.12)'};
+        --dv-red-glow: ${
+          isDark ? "rgba(229, 57, 53, 0.25)" : "rgba(229, 57, 53, 0.12)"
+        };
         --dv-orange: #fb8c00;
         --dv-green: #43a047;
         --dv-blue: #1e88e5;
@@ -146,7 +148,9 @@ class DiveraAlarmCard extends HTMLElement {
         animation: pulse-badge 2s ease-in-out infinite;
       }
       .badge-idle {
-        background: ${isDark ? 'rgba(67, 160, 71, 0.15)' : 'rgba(67, 160, 71, 0.1)'};
+        background: ${
+          isDark ? "rgba(67, 160, 71, 0.15)" : "rgba(67, 160, 71, 0.1)"
+        };
         color: var(--dv-green);
       }
       @keyframes pulse-badge {
@@ -160,8 +164,8 @@ class DiveraAlarmCard extends HTMLElement {
       }
       .alarm-active {
         background: linear-gradient(135deg,
-          ${isDark ? 'rgba(229, 57, 53, 0.08)' : 'rgba(229, 57, 53, 0.04)'},
-          ${isDark ? 'rgba(229, 57, 53, 0.02)' : 'transparent'}
+          ${isDark ? "rgba(229, 57, 53, 0.08)" : "rgba(229, 57, 53, 0.04)"},
+          ${isDark ? "rgba(229, 57, 53, 0.02)" : "transparent"}
         );
         border-left: 4px solid var(--dv-red);
         padding: 16px 20px;
@@ -410,55 +414,56 @@ class DiveraAlarmCard extends HTMLElement {
   _updateCard() {
     if (!this._hass || !this._config) return;
     const sr = this.shadowRoot;
-    if (!sr.getElementById('s-header')) return;
+    if (!sr.getElementById("s-header")) return;
 
     const alarm = this._getAlarmData();
     const vehicles = this._getVehicleData();
     const status = this._getStatusData();
 
-    sr.getElementById('s-header').innerHTML = this._renderHeader(alarm);
-    sr.getElementById('s-alarm').innerHTML = this._renderAlarm(alarm);
+    sr.getElementById("s-header").innerHTML = this._renderHeader(alarm);
+    sr.getElementById("s-alarm").innerHTML = this._renderAlarm(alarm);
 
     if (this._config.show_map) {
       this._updateMap(alarm);
     } else {
-      sr.getElementById('s-map').style.display = 'none';
+      sr.getElementById("s-map").style.display = "none";
     }
 
-    const vehicleSection = sr.getElementById('s-vehicles');
-    vehicleSection.innerHTML = (this._config.show_vehicles && vehicles.length)
-      ? this._renderVehicles(vehicles)
-      : '';
+    const vehicleSection = sr.getElementById("s-vehicles");
+    vehicleSection.innerHTML =
+      this._config.show_vehicles && vehicles.length
+        ? this._renderVehicles(vehicles)
+        : "";
 
-    const statusSection = sr.getElementById('s-status');
+    const statusSection = sr.getElementById("s-status");
     statusSection.innerHTML = this._config.show_status
       ? this._renderAvailability(status)
-      : '';
+      : "";
 
-    sr.getElementById('s-footer').innerHTML = this._renderFooter();
+    sr.getElementById("s-footer").innerHTML = this._renderFooter();
   }
 
   _updateMap(alarm) {
-    const section = this.shadowRoot.getElementById('s-map');
+    const section = this.shadowRoot.getElementById("s-map");
     if (!section) return;
 
     if (!alarm.active) {
-      section.style.display = 'none';
+      section.style.display = "none";
       this._mapUrl = null;
       return;
     }
 
-    section.style.display = 'block';
+    section.style.display = "block";
 
     if (!alarm.lat || !alarm.lng) {
-      if (this._mapUrl !== 'placeholder') {
+      if (this._mapUrl !== "placeholder") {
         section.innerHTML = `
           <div class="map-placeholder">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
             Kein Einsatzort verfügbar
           </div>
         `;
-        this._mapUrl = 'placeholder';
+        this._mapUrl = "placeholder";
       }
       return;
     }
@@ -466,17 +471,21 @@ class DiveraAlarmCard extends HTMLElement {
     const zoom = this._config.map_zoom;
     const delta = 0.005 * Math.pow(2, 15 - zoom);
     const { lat, lng } = alarm;
-    const mapUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${lng - delta * 1.6},${lat - delta},${lng + delta * 1.6},${lat + delta}&layer=mapnik&marker=${lat},${lng}`;
+    const mapUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${
+      lng - delta * 1.6
+    },${lat - delta},${lng + delta * 1.6},${
+      lat + delta
+    }&layer=mapnik&marker=${lat},${lng}`;
 
     if (this._mapUrl === mapUrl) return;
 
     this._mapUrl = mapUrl;
-    const iframe = document.createElement('iframe');
+    const iframe = document.createElement("iframe");
     iframe.src = mapUrl;
-    iframe.loading = 'lazy';
-    iframe.referrerPolicy = 'no-referrer';
-    iframe.title = 'Einsatzort';
-    section.innerHTML = '';
+    iframe.loading = "lazy";
+    iframe.referrerPolicy = "no-referrer";
+    iframe.title = "Einsatzort";
+    section.innerHTML = "";
     section.appendChild(iframe);
   }
 
@@ -485,7 +494,11 @@ class DiveraAlarmCard extends HTMLElement {
     const hass = this._hass;
     const alarmState = hass.states[cfg.alarm_entity];
 
-    if (!alarmState || alarmState.state === 'unavailable' || alarmState.state === 'unknown') {
+    if (
+      !alarmState ||
+      alarmState.state === "unavailable" ||
+      alarmState.state === "unknown"
+    ) {
       return { active: false };
     }
 
@@ -493,20 +506,25 @@ class DiveraAlarmCard extends HTMLElement {
     const state = alarmState.state;
 
     // The integration exposes alarm data as sensor attributes
-    const isActive = state !== '' && state !== 'idle' && state !== 'unavailable'
-      && state !== 'unknown' && state !== 'None' && !attrs.closed;
+    const isActive =
+      state !== "" &&
+      state !== "idle" &&
+      state !== "unavailable" &&
+      state !== "unknown" &&
+      state !== "None" &&
+      !attrs.closed;
 
     return {
       active: isActive,
-      title: attrs.title || state || '',
-      text: attrs.text || attrs.message || '',
-      address: attrs.address || '',
+      title: attrs.title || state || "",
+      text: attrs.text || attrs.message || "",
+      address: attrs.address || "",
       lat: attrs.lat || attrs.latitude || null,
       lng: attrs.lng || attrs.longitude || null,
       priority: attrs.priority !== undefined ? attrs.priority : true,
       closed: attrs.closed || false,
       timestamp: attrs.date || attrs.ts_create || attrs.timestamp || null,
-      id: attrs.id || attrs.foreign_id || '',
+      id: attrs.id || attrs.foreign_id || "",
       groups: attrs.groups || attrs.group || [],
     };
   }
@@ -515,40 +533,53 @@ class DiveraAlarmCard extends HTMLElement {
     const entities = this._config.vehicle_entities;
     if (!entities.length) return [];
 
-    return entities.map(entityId => {
-      const state = this._hass.states[entityId];
-      if (!state) return null;
-      const attrs = state.attributes || {};
-      return {
-        name: attrs.shortname || attrs.friendly_name || entityId,
-        fullname: attrs.fullname || attrs.Fahrzeug || '',
-        fms: attrs.fmsstatus || this._fmsFromState(state.state),
-        fmsLabel: state.state || 'unbekannt',
-        note: attrs.fmsstatus_note || attrs.Notiz || '',
-      };
-    }).filter(Boolean);
+    return entities
+      .map((entityId) => {
+        const state = this._hass.states[entityId];
+        if (!state) return null;
+        const attrs = state.attributes || {};
+        return {
+          name: attrs.shortname || attrs.friendly_name || entityId,
+          fullname: attrs.fullname || attrs.Fahrzeug || "",
+          fms: attrs.fmsstatus || this._fmsFromState(state.state),
+          fmsLabel: state.state || "unbekannt",
+          note: attrs.fmsstatus_note || attrs.Notiz || "",
+        };
+      })
+      .filter(Boolean);
   }
 
   _fmsFromState(stateStr) {
     const map = {
-      'funkfrei': 1, 'auf wache': 2, 'einsatz übernommen': 3,
-      'einsatzstelle an': 4, 'sprechwunsch': 5, 'nicht einsatzbereit': 6
+      funkfrei: 1,
+      "auf wache": 2,
+      "einsatz übernommen": 3,
+      "einsatzstelle an": 4,
+      sprechwunsch: 5,
+      "nicht einsatzbereit": 6,
     };
-    return map[(stateStr || '').toLowerCase()] || 0;
+    return map[(stateStr || "").toLowerCase()] || 0;
   }
 
   _getStatusData() {
     const entity = this._config.status_entity;
     const state = this._hass.states[entity];
-    if (!state) return { available: false, label: 'Unbekannt', id: 0, cls: 'avail-off-duty', icon: '⚪' };
+    if (!state)
+      return {
+        available: false,
+        label: "Unbekannt",
+        id: 0,
+        cls: "avail-off-duty",
+        icon: "⚪",
+      };
 
     const statusId = parseInt(state.state, 10);
     const statusMap = {
-      1: { label: 'Auf Wache', icon: '🟢', cls: 'avail-on-duty' },
-      2: { label: 'Verfügbar', icon: '🟢', cls: 'avail-on-duty' },
-      3: { label: 'Nicht verfügbar', icon: '🔴', cls: 'avail-not-available' },
-      4: { label: 'Bedingt verfügbar', icon: '🟡', cls: 'avail-off-duty' },
-      0: { label: 'Nicht gesetzt', icon: '⚪', cls: 'avail-off-duty' },
+      1: { label: "Auf Wache", icon: "🟢", cls: "avail-on-duty" },
+      2: { label: "Verfügbar", icon: "🟢", cls: "avail-on-duty" },
+      3: { label: "Nicht verfügbar", icon: "🔴", cls: "avail-not-available" },
+      4: { label: "Bedingt verfügbar", icon: "🟡", cls: "avail-off-duty" },
+      0: { label: "Nicht gesetzt", icon: "⚪", cls: "avail-off-duty" },
     };
 
     const s = statusMap[statusId] || statusMap[0];
@@ -561,12 +592,18 @@ class DiveraAlarmCard extends HTMLElement {
         <div class="header-left">
           <div class="header-logo">D</div>
           <div>
-            <div class="header-title">${this._escapeHtml(this._config.title)}</div>
-            <div class="header-unit">${this._escapeHtml(this._config.unit_name)}</div>
+            <div class="header-title">${this._escapeHtml(
+              this._config.title,
+            )}</div>
+            <div class="header-unit">${this._escapeHtml(
+              this._config.unit_name,
+            )}</div>
           </div>
         </div>
-        <div class="header-status-badge ${alarm.active ? 'badge-alarm' : 'badge-idle'}">
-          ${alarm.active ? '⚠ Alarm' : '✓ Bereit'}
+        <div class="header-status-badge ${
+          alarm.active ? "badge-alarm" : "badge-idle"
+        }">
+          ${alarm.active ? "⚠ Alarm" : "✓ Bereit"}
         </div>
       </div>
     `;
@@ -584,37 +621,59 @@ class DiveraAlarmCard extends HTMLElement {
       `;
     }
 
-    const priorityClass = alarm.priority ? 'priority-high' : 'priority-low';
-    const timeStr = alarm.timestamp ? this._formatTime(alarm.timestamp) : '';
+    const priorityClass = alarm.priority ? "priority-high" : "priority-low";
+    const timeStr = alarm.timestamp ? this._formatTime(alarm.timestamp) : "";
 
     return `
       <div class="alarm-section">
         <div class="alarm-active ${priorityClass}">
           <div class="alarm-priority-tag">
             <span class="dot"></span>
-            ${alarm.priority ? 'Alarm — Sonderrechte' : 'Alarm'}
+            ${alarm.priority ? "Alarm — Sonderrechte" : "Alarm"}
           </div>
           <div class="alarm-title">${this._escapeHtml(alarm.title)}</div>
-          ${alarm.text ? `<div class="alarm-message">${this._escapeHtml(alarm.text)}</div>` : ''}
+          ${
+            alarm.text
+              ? `<div class="alarm-message">${this._escapeHtml(
+                  alarm.text,
+                )}</div>`
+              : ""
+          }
           <div class="alarm-meta">
-            ${alarm.address ? `
+            ${
+              alarm.address
+                ? `
               <div class="alarm-meta-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                <span class="meta-label">${this._escapeHtml(alarm.address)}</span>
+                <span class="meta-label">${this._escapeHtml(
+                  alarm.address,
+                )}</span>
               </div>
-            ` : ''}
-            ${timeStr ? `
+            `
+                : ""
+            }
+            ${
+              timeStr
+                ? `
               <div class="alarm-meta-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
                 <span>${timeStr}</span>
               </div>
-            ` : ''}
-            ${alarm.id ? `
+            `
+                : ""
+            }
+            ${
+              alarm.id
+                ? `
               <div class="alarm-meta-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M9 9h6M9 13h4"/></svg>
-                <span style="font-family:var(--dv-mono)">#${this._escapeHtml(String(alarm.id))}</span>
+                <span style="font-family:var(--dv-mono)">#${this._escapeHtml(
+                  String(alarm.id),
+                )}</span>
               </div>
-            ` : ''}
+            `
+                : ""
+            }
           </div>
         </div>
       </div>
@@ -623,19 +682,22 @@ class DiveraAlarmCard extends HTMLElement {
 
   _renderVehicles(vehicles) {
     const fmsLabels = {
-      1: 'S1 · frei Funk',
-      2: 'S2 · Einsatzbereit',
-      3: 'S3 · auf Anfahrt',
-      4: 'S4 · am Einsatzort',
-      5: 'S5 · Sprechwunsch',
-      6: 'S6 · nicht einsatzbereit',
+      1: "S1 · frei Funk",
+      2: "S2 · Einsatzbereit",
+      3: "S3 · auf Anfahrt",
+      4: "S4 · am Einsatzort",
+      5: "S5 · Sprechwunsch",
+      6: "S6 · nicht einsatzbereit",
     };
 
-    const items = vehicles.map(v => {
-      const fms = v.fms || 0;
-      const label = fmsLabels[fms] || `S${fms}`;
-      return `
-        <div class="vehicle-item" title="${this._escapeHtml(v.fullname)}${v.note ? ' — ' + this._escapeHtml(v.note) : ''}">
+    const items = vehicles
+      .map((v) => {
+        const fms = v.fms || 0;
+        const label = fmsLabels[fms] || `S${fms}`;
+        return `
+        <div class="vehicle-item" title="${this._escapeHtml(v.fullname)}${
+          v.note ? " — " + this._escapeHtml(v.note) : ""
+        }">
           <div class="vehicle-status-dot fms-${fms}"></div>
           <div class="vehicle-info">
             <div class="vehicle-name">${this._escapeHtml(v.name)}</div>
@@ -643,7 +705,8 @@ class DiveraAlarmCard extends HTMLElement {
           </div>
         </div>
       `;
-    }).join('');
+      })
+      .join("");
 
     return `
       <div class="section-title">Fahrzeuge</div>
@@ -668,7 +731,11 @@ class DiveraAlarmCard extends HTMLElement {
 
   _renderFooter() {
     const now = new Date();
-    const ts = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const ts = now.toLocaleTimeString("de-DE", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
     return `
       <div class="card-footer">
         <span>DIVERA 24/7</span>
@@ -679,7 +746,7 @@ class DiveraAlarmCard extends HTMLElement {
 
   // --- Utilities ---
   _escapeHtml(str) {
-    const div = document.createElement('div');
+    const div = document.createElement("div");
     div.textContent = str;
     return div.innerHTML;
   }
@@ -687,28 +754,33 @@ class DiveraAlarmCard extends HTMLElement {
   _formatTime(ts) {
     try {
       let date;
-      if (typeof ts === 'number') {
+      if (typeof ts === "number") {
         // Unix timestamp (seconds or ms)
         date = new Date(ts > 1e12 ? ts : ts * 1000);
       } else {
         date = new Date(ts);
       }
-      if (isNaN(date.getTime())) return '';
-      return date.toLocaleString('de-DE', {
-        day: '2-digit', month: '2-digit', year: 'numeric',
-        hour: '2-digit', minute: '2-digit'
+      if (isNaN(date.getTime())) return "";
+      return date.toLocaleString("de-DE", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
       });
-    } catch { return ''; }
+    } catch {
+      return "";
+    }
   }
 }
 
-customElements.define('divera-alarm-card', DiveraAlarmCard);
+customElements.define("divera-alarm-card", DiveraAlarmCard);
 
 // Register card in HA's custom card picker
 window.customCards = window.customCards || [];
 window.customCards.push({
-  type: 'divera-alarm-card',
-  name: 'DIVERA 24/7 Alarm',
-  description: 'Alarm-Dashboard für Freiwillige Feuerwehr mit Divera 24/7',
+  type: "divera-alarm-card",
+  name: "DIVERA 24/7 Alarm",
+  description: "Alarm-Dashboard für Freiwillige Feuerwehr mit Divera 24/7",
   preview: true,
 });

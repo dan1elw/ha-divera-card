@@ -60,6 +60,7 @@ rm divera.zip
 3. **Einheit(en)** auswählen
 
 > **Hinweis zum Access-Key:**
+>
 > - Persönlicher Key: Zeigt nur eigene Daten, setzt eigenen Status
 > - System-Benutzer Key: Kann Daten aller Nutzer abrufen (Verwaltung → Schnittstellen → System-Benutzer)
 > - Für das Dashboard empfohlen: **Persönlicher Key** (DSGVO-konform, reicht für Alarm + eigenen Status)
@@ -204,12 +205,12 @@ vehicle_entities:
 
 # --- Anzeige-Optionen ---
 title: "DIVERA 24/7"
-unit_name: "FF Musterstadt"     # Name eurer Feuerwehr
-show_map: true                   # Karte mit Einsatzort
-show_vehicles: true              # Fahrzeugstatus
-show_status: true                # Eigener Verfügbarkeitsstatus
-map_zoom: 15                     # Zoom-Level der Karte (10-18)
-theme: dark                      # 'dark' oder 'light'
+unit_name: "FF Musterstadt" # Name eurer Feuerwehr
+show_map: true # Karte mit Einsatzort
+show_vehicles: true # Fahrzeugstatus
+show_status: true # Eigener Verfügbarkeitsstatus
+map_zoom: 15 # Zoom-Level der Karte (10-18)
+theme: dark # 'dark' oder 'light'
 ```
 
 ---
@@ -273,12 +274,12 @@ automation:
 
 Da die Entity-Benennung von der Integration-Version und den Einstellungen abhängt, hier eine Übersicht zur Identifikation:
 
-| Funktion | Typischer Entity-Name | Wo prüfen |
-|---|---|---|
-| Letzter Alarm | `sensor.divera_last_alarm` | Entwicklerwerkzeuge → Zustände → "divera" suchen |
-| Alarm-ID | `sensor.divera_last_alarm_id` | ditto |
-| Eigener Status | `sensor.divera_status` | ditto |
-| Fahrzeug (REST) | `sensor.divera_fahrzeug_X` | Definiert in deiner `configuration.yaml` |
+| Funktion        | Typischer Entity-Name         | Wo prüfen                                        |
+| --------------- | ----------------------------- | ------------------------------------------------ |
+| Letzter Alarm   | `sensor.divera_last_alarm`    | Entwicklerwerkzeuge → Zustände → "divera" suchen |
+| Alarm-ID        | `sensor.divera_last_alarm_id` | ditto                                            |
+| Eigener Status  | `sensor.divera_status`        | ditto                                            |
+| Fahrzeug (REST) | `sensor.divera_fahrzeug_X`    | Definiert in deiner `configuration.yaml`         |
 
 > **Wichtig:** Die Entity-Namen der HACS-Integration können je nach Version und Einheit variieren. Prüfe immer unter **Entwicklerwerkzeuge → Zustände** nach der Ersteinrichtung, welche Entities tatsächlich angelegt wurden, und passe die Card-Konfiguration entsprechend an.
 
@@ -302,9 +303,9 @@ Die HACS Integration pollt standardmäßig alle 60 Sekunden. Für schnelleres Po
 
 ## Divera API Limitierungen
 
-| Feature | FREE | ALARM | PRO |
-|---|---|---|---|
-| API Request-Rate | 1 / 5 Min | unbegrenzt | unbegrenzt |
-| Alarm-Daten | nur Stichwort | alle Details | alle Details |
-| Adresse / Koordinaten | ✗ | ✓ | ✓ |
-| Einheitsübergreifend | ✗ | ✗ | ✓ |
+| Feature               | FREE          | ALARM        | PRO          |
+| --------------------- | ------------- | ------------ | ------------ |
+| API Request-Rate      | 1 / 5 Min     | unbegrenzt   | unbegrenzt   |
+| Alarm-Daten           | nur Stichwort | alle Details | alle Details |
+| Adresse / Koordinaten | ✗             | ✓            | ✓            |
+| Einheitsübergreifend  | ✗             | ✗            | ✓            |
