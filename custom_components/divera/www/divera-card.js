@@ -63,11 +63,13 @@ class DiveraAlarmCard extends HTMLElement {
     this.shadowRoot.addEventListener("click", (e) => {
       const target = e.target.closest("[data-entity]");
       if (!target) return;
-      this.dispatchEvent(new CustomEvent("hass-more-info", {
-        bubbles: true,
-        composed: true,
-        detail: { entityId: target.dataset.entity },
-      }));
+      this.dispatchEvent(
+        new CustomEvent("hass-more-info", {
+          bubbles: true,
+          composed: true,
+          detail: { entityId: target.dataset.entity },
+        }),
+      );
     });
   }
 
@@ -642,7 +644,9 @@ class DiveraAlarmCard extends HTMLElement {
 
     return `
       <div class="alarm-section">
-        <div class="alarm-active ${priorityClass}" data-entity="${this._config.alarm_entity}" style="cursor:pointer">
+        <div class="alarm-active ${priorityClass}" data-entity="${
+          this._config.alarm_entity
+        }" style="cursor:pointer">
           <div class="alarm-priority-tag">
             <span class="dot"></span>
             ${alarm.priority ? "Alarm — Sonderrechte" : "Alarm"}
@@ -711,7 +715,9 @@ class DiveraAlarmCard extends HTMLElement {
         const fms = v.fms || 0;
         const label = fmsLabels[fms] || `S${fms}`;
         return `
-        <div class="vehicle-item" data-entity="${v.entityId}" title="${this._escapeHtml(v.fullname)}${
+        <div class="vehicle-item" data-entity="${
+          v.entityId
+        }" title="${this._escapeHtml(v.fullname)}${
           v.note ? " — " + this._escapeHtml(v.note) : ""
         }" style="cursor:pointer">
           <div class="vehicle-status-dot fms-${fms}"></div>
@@ -734,10 +740,14 @@ class DiveraAlarmCard extends HTMLElement {
     return `
       <div class="section-title">Eigener Status</div>
       <div class="availability-section">
-        <div class="availability-bar" data-entity="${this._config.status_entity}">
+        <div class="availability-bar" data-entity="${
+          this._config.status_entity
+        }">
           <div class="availability-icon ${status.cls}">${status.icon}</div>
           <div class="availability-details">
-            <div class="availability-label">${this._escapeHtml(status.label)}</div>
+            <div class="availability-label">${this._escapeHtml(
+              status.label,
+            )}</div>
           </div>
         </div>
       </div>
