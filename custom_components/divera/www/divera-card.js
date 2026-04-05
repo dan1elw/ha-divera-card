@@ -61,6 +61,15 @@ class DiveraAlarmCard extends HTMLElement {
         <div id="s-footer"></div>
       </div>
     `;
+    this.shadowRoot.addEventListener("click", (e) => {
+      const target = e.target.closest("[data-entity]");
+      if (!target) return;
+      this.dispatchEvent(new CustomEvent("hass-more-info", {
+        bubbles: true,
+        composed: true,
+        detail: { entityId: target.dataset.entity },
+      }));
+    });
   }
 
   _getStyles() {
@@ -328,22 +337,26 @@ class DiveraAlarmCard extends HTMLElement {
 
       /* --- Availability --- */
       .availability-section {
-        padding: 8px 16px 16px;
+        padding: 4px 16px 12px;
       }
       .availability-bar {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 8px;
         background: var(--dv-surface);
         border: 1px solid var(--dv-border);
         border-radius: 8px;
-        padding: 12px 16px;
+        padding: 8px 12px;
+        cursor: pointer;
+      }
+      .availability-bar:hover {
+        border-color: var(--dv-text-muted);
       }
       .availability-icon {
-        width: 36px; height: 36px;
+        width: 26px; height: 26px;
         border-radius: 50%;
         display: flex; align-items: center; justify-content: center;
-        font-size: 18px;
+        font-size: 14px;
         flex-shrink: 0;
       }
       .avail-on-duty {
@@ -362,10 +375,7 @@ class DiveraAlarmCard extends HTMLElement {
         flex: 1; min-width: 0;
       }
       .availability-label {
-        font-size: 13px; font-weight: 600;
-      }
-      .availability-sublabel {
-        font-size: 11px; color: var(--dv-text-muted);
+        font-size: 12px; font-weight: 600;
       }
 
       /* --- Footer --- */
@@ -541,6 +551,7 @@ class DiveraAlarmCard extends HTMLElement {
         if (!state) return null;
         const attrs = state.attributes || {};
         return {
+          entityId,
           name: attrs.shortname || attrs.friendly_name || entityId,
           fullname: attrs.fullname || attrs.Fahrzeug || "",
           fms: attrs.fmsstatus || this._fmsFromState(state.state),
@@ -632,7 +643,7 @@ class DiveraAlarmCard extends HTMLElement {
     if (!alarm.active) {
       return `
         <div class="alarm-section">
-          <div class="alarm-inactive">
+          <div class="alarm-inactive" data-entity="${this._config.alarm_entity}" style="cursor:pointer">
             <div class="idle-icon">🛡️</div>
             <div class="idle-text">Kein aktiver Einsatz</div>
           </div>
@@ -645,7 +656,7 @@ class DiveraAlarmCard extends HTMLElement {
 
     return `
       <div class="alarm-section">
-        <div class="alarm-active ${priorityClass}">
+        <div class="alarm-active ${priorityClass}" data-entity="${this._config.alarm_entity}" style="cursor:pointer">
           <div class="alarm-priority-tag">
             <span class="dot"></span>
             ${alarm.priority ? "Alarm — Sonderrechte" : "Alarm"}
@@ -714,9 +725,9 @@ class DiveraAlarmCard extends HTMLElement {
         const fms = v.fms || 0;
         const label = fmsLabels[fms] || `S${fms}`;
         return `
-        <div class="vehicle-item" title="${this._escapeHtml(v.fullname)}${
+        <div class="vehicle-item" data-entity="${v.entityId}" title="${this._escapeHtml(v.fullname)}${
           v.note ? " — " + this._escapeHtml(v.note) : ""
-        }">
+        }" style="cursor:pointer">
           <div class="vehicle-status-dot fms-${fms}"></div>
           <div class="vehicle-info">
             <div class="vehicle-name">${this._escapeHtml(v.name)}</div>
@@ -737,15 +748,10 @@ class DiveraAlarmCard extends HTMLElement {
     return `
       <div class="section-title">Eigener Status</div>
       <div class="availability-section">
-        <div class="availability-bar">
+        <div class="availability-bar" data-entity="${this._config.status_entity}">
           <div class="availability-icon ${status.cls}">${status.icon}</div>
           <div class="availability-details">
-            <div class="availability-label">${status.label}</div>
-            ${
-              status.id !== null
-                ? `<div class="availability-sublabel">Status ${status.id}</div>`
-                : ""
-            }
+            <div class="availability-label">${this._escapeHtml(status.label)}</div>
           </div>
         </div>
       </div>
