@@ -1,0 +1,619 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DIVERA Card Simulator</title>
+    <script src="./custom_components/divera/www/divera-card.js"></script>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        background: #0d1117;
+        color: #c9d1d9;
+        min-height: 100vh;
+        display: flex;
+      }
+
+      /* ── Sidebar ── */
+      #sidebar {
+        width: 280px;
+        min-width: 280px;
+        background: #161b22;
+        border-right: 1px solid #30363d;
+        padding: 20px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        overflow-y: auto;
+      }
+
+      #sidebar h1 {
+        font-size: 14px;
+        font-weight: 700;
+        color: #e6edf3;
+        letter-spacing: 0.5px;
+      }
+      #sidebar h1 span {
+        color: #e53935;
+      }
+
+      .section-label {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        color: #8b949e;
+        margin-bottom: 8px;
+      }
+
+      .scenario-btn {
+        display: block;
+        width: 100%;
+        background: #21262d;
+        border: 1px solid #30363d;
+        border-radius: 6px;
+        color: #c9d1d9;
+        font-size: 13px;
+        padding: 8px 12px;
+        text-align: left;
+        cursor: pointer;
+        margin-bottom: 6px;
+        transition:
+          border-color 0.15s,
+          background 0.15s;
+      }
+      .scenario-btn:hover {
+        background: #30363d;
+        border-color: #58a6ff;
+      }
+      .scenario-btn.active {
+        background: rgba(229, 57, 53, 0.12);
+        border-color: #e53935;
+        color: #fff;
+      }
+      .scenario-btn .tag {
+        font-size: 10px;
+        font-weight: 600;
+        padding: 1px 6px;
+        border-radius: 10px;
+        margin-left: 6px;
+        vertical-align: middle;
+      }
+      .tag-alarm {
+        background: rgba(229, 57, 53, 0.2);
+        color: #e53935;
+      }
+      .tag-idle {
+        background: rgba(67, 160, 71, 0.2);
+        color: #43a047;
+      }
+      .tag-warn {
+        background: rgba(251, 140, 0, 0.2);
+        color: #fb8c00;
+      }
+
+      .toggle-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6px 0;
+      }
+      .toggle-row label {
+        font-size: 13px;
+        cursor: pointer;
+      }
+
+      /* Toggle switch */
+      .switch {
+        position: relative;
+        width: 36px;
+        height: 20px;
+        flex-shrink: 0;
+      }
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .slider {
+        position: absolute;
+        inset: 0;
+        background: #30363d;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .slider::before {
+        content: "";
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        background: #fff;
+        border-radius: 50%;
+        left: 3px;
+        top: 3px;
+        transition: transform 0.2s;
+      }
+      input:checked + .slider {
+        background: #e53935;
+      }
+      input:checked + .slider::before {
+        transform: translateX(16px);
+      }
+
+      .vehicle-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 0;
+        border-bottom: 1px solid #21262d;
+      }
+      .vehicle-row:last-child {
+        border-bottom: none;
+      }
+      .v-name {
+        font-size: 12px;
+        font-weight: 600;
+        min-width: 70px;
+      }
+      .v-fms-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .fms-colors {
+        --c1: #43a047;
+        --c2: #43a047;
+        --c3: #fb8c00;
+        --c4: #e53935;
+        --c5: #1e88e5;
+        --c6: #78909c;
+      }
+
+      select.fms-select {
+        flex: 1;
+        background: #21262d;
+        border: 1px solid #30363d;
+        border-radius: 4px;
+        color: #c9d1d9;
+        font-size: 12px;
+        padding: 3px 6px;
+        cursor: pointer;
+      }
+
+      .text-input {
+        width: 100%;
+        background: #21262d;
+        border: 1px solid #30363d;
+        border-radius: 6px;
+        color: #c9d1d9;
+        font-size: 13px;
+        padding: 6px 10px;
+      }
+      .text-input:focus {
+        outline: none;
+        border-color: #58a6ff;
+      }
+
+      .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .input-group label {
+        font-size: 11px;
+        color: #8b949e;
+      }
+
+      hr {
+        border: none;
+        border-top: 1px solid #30363d;
+      }
+
+      /* ── Preview area ── */
+      #preview {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 32px 24px;
+        overflow-y: auto;
+        background: #0d1117;
+      }
+
+      #preview-label {
+        font-size: 11px;
+        color: #8b949e;
+        letter-spacing: 0.5px;
+        margin-bottom: 16px;
+        text-transform: uppercase;
+      }
+
+      #card-wrapper {
+        width: 100%;
+        max-width: 480px;
+      }
+
+      divera-alarm-card {
+        display: block;
+      }
+
+      .theme-bg-light {
+        background: #f0f2f5;
+        padding: 16px;
+        border-radius: 12px;
+      }
+      .theme-bg-dark {
+        background: #0f1419;
+        padding: 16px;
+        border-radius: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ── Sidebar ── -->
+    <div id="sidebar">
+      <h1>DIVERA <span>Simulator</span></h1>
+
+      <div>
+        <div class="section-label">Szenario</div>
+        <button class="scenario-btn active" data-scenario="idle">
+          Kein Einsatz <span class="tag tag-idle">Bereit</span>
+        </button>
+        <button class="scenario-btn" data-scenario="alarm-high">
+          Brand in Gebäude <span class="tag tag-alarm">Prio</span>
+        </button>
+        <button class="scenario-btn" data-scenario="alarm-std">
+          Hilfeleistung <span class="tag tag-warn">Standard</span>
+        </button>
+        <button class="scenario-btn" data-scenario="alarm-noloc">
+          Einsatz (kein Ort) <span class="tag tag-alarm">Alarm</span>
+        </button>
+      </div>
+
+      <hr />
+
+      <div>
+        <div class="section-label">Anzeige</div>
+        <div class="toggle-row">
+          <label for="toggle-map">Karte anzeigen</label>
+          <label class="switch">
+            <input type="checkbox" id="toggle-map" checked />
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="toggle-row">
+          <label for="toggle-vehicles">Fahrzeuge anzeigen</label>
+          <label class="switch">
+            <input type="checkbox" id="toggle-vehicles" checked />
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="toggle-row">
+          <label for="toggle-status">Eigener Status</label>
+          <label class="switch">
+            <input type="checkbox" id="toggle-status" checked />
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="toggle-row">
+          <label for="toggle-theme">Helles Theme</label>
+          <label class="switch">
+            <input type="checkbox" id="toggle-theme" />
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <hr />
+
+      <div>
+        <div class="section-label">Konfiguration</div>
+        <div class="input-group">
+          <label>Kartenname</label>
+          <input
+            type="text"
+            class="text-input"
+            id="cfg-title"
+            value="DIVERA 24/7"
+          />
+        </div>
+        <div style="height: 8px"></div>
+        <div class="input-group">
+          <label>Einheit</label>
+          <input
+            type="text"
+            class="text-input"
+            id="cfg-unit"
+            value="FF Musterstadt"
+          />
+        </div>
+      </div>
+
+      <hr />
+
+      <div>
+        <div class="section-label">Eigener Status</div>
+        <select
+          class="fms-select"
+          id="user-status"
+          style="width: 100%; padding: 6px 8px"
+        >
+          <option value="0">⚪ 0 – Nicht gesetzt</option>
+          <option value="1" selected>🟢 1 – Auf Wache</option>
+          <option value="2">🟢 2 – Verfügbar</option>
+          <option value="3">🔴 3 – Nicht verfügbar</option>
+          <option value="4">🟡 4 – Bedingt verfügbar</option>
+        </select>
+      </div>
+
+      <hr />
+
+      <div class="fms-colors">
+        <div class="section-label">Fahrzeug-FMS</div>
+        <div id="vehicle-controls"></div>
+      </div>
+    </div>
+
+    <!-- ── Preview ── -->
+    <div id="preview">
+      <div id="preview-label">Kartenvorschau</div>
+      <div id="card-wrapper">
+        <div id="card-bg" class="theme-bg-dark">
+          <divera-alarm-card id="the-card"></divera-alarm-card>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ── Mock vehicle fleet ──
+      const VEHICLES = [
+        {
+          id: "sensor.v_hlf",
+          shortname: "HLF20/16",
+          fullname: "Hilfeleistungslöschfahrzeug",
+          fms: 2,
+        },
+        {
+          id: "sensor.v_tlf",
+          shortname: "TLF3000",
+          fullname: "Tanklöschfahrzeug",
+          fms: 2,
+        },
+        { id: "sensor.v_rw", shortname: "RW", fullname: "Rüstwagen", fms: 1 },
+        {
+          id: "sensor.v_elw",
+          shortname: "ELW",
+          fullname: "Einsatzleitwagen",
+          fms: 6,
+        },
+      ];
+
+      // Current FMS states (user-editable)
+      const vehicleFms = Object.fromEntries(VEHICLES.map((v) => [v.id, v.fms]));
+
+      const FMS_LABELS = {
+        0: "–",
+        1: "S1 · frei Funk",
+        2: "S2 · Einsatzbereit",
+        3: "S3 · auf Anfahrt",
+        4: "S4 · am Einsatzort",
+        5: "S5 · Sprechwunsch",
+        6: "S6 · nicht bereit",
+      };
+      const FMS_COLORS = {
+        1: "#43a047",
+        2: "#43a047",
+        3: "#fb8c00",
+        4: "#e53935",
+        5: "#1e88e5",
+        6: "#78909c",
+      };
+
+      // ── Scenarios ──
+      const SCENARIOS = {
+        idle: {
+          state: "idle",
+          attrs: {},
+        },
+        "alarm-high": {
+          state: "Brand in Gebäude",
+          attrs: {
+            title: "Brand in Gebäude",
+            text: "Mehrfamilienhaus, Rauch aus dem 3. OG. Personen eingeschlossen.",
+            address: "Hauptstraße 42, 12345 Musterstadt",
+            lat: 52.52,
+            lng: 13.405,
+            priority: true,
+            closed: false,
+            date: new Date(Date.now() - 7 * 60000).toISOString(),
+            id: "24001",
+            groups: ["Zug 1"],
+          },
+        },
+        "alarm-std": {
+          state: "Hilfeleistung",
+          attrs: {
+            title: "Hilfeleistung — VU",
+            text: "Verkehrsunfall mit eingeklemmter Person, 2 Fahrzeuge beteiligt.",
+            address: "Bahnhofstraße 7, 12345 Musterstadt",
+            lat: 52.517,
+            lng: 13.389,
+            priority: false,
+            closed: false,
+            date: new Date(Date.now() - 3 * 60000).toISOString(),
+            id: "24002",
+            groups: ["Zug 2"],
+          },
+        },
+        "alarm-noloc": {
+          state: "Einsatz",
+          attrs: {
+            title: "Einsatz ohne Koordinaten",
+            text: "Adresse liegt außerhalb des Kartierungsbereichs.",
+            address: "Unbekannte Straße",
+            lat: null,
+            lng: null,
+            priority: true,
+            closed: false,
+            date: new Date(Date.now() - 1 * 60000).toISOString(),
+            id: "24003",
+          },
+        },
+      };
+
+      // ── Build mock hass object ──
+      function buildHass(scenario, userStatus) {
+        const s = SCENARIOS[scenario];
+        const states = {};
+
+        states["sensor.divera_last_alarm"] = {
+          state: s.state,
+          attributes: { ...s.attrs },
+        };
+
+        states["sensor.divera_status"] = {
+          state: String(userStatus),
+          attributes: { friendly_name: "Divera Status" },
+        };
+
+        VEHICLES.forEach((v) => {
+          const fms = vehicleFms[v.id];
+          const stateStr =
+            {
+              1: "Funkfrei",
+              2: "auf Wache",
+              3: "Einsatz übernommen",
+              4: "Einsatzstelle an",
+              5: "Sprechwunsch",
+              6: "Nicht einsatzbereit",
+            }[fms] || "";
+          states[v.id] = {
+            state: stateStr,
+            attributes: {
+              shortname: v.shortname,
+              fullname: v.fullname,
+              fmsstatus: fms,
+              friendly_name: v.shortname,
+            },
+          };
+        });
+
+        return { states };
+      }
+
+      // ── Card element ──
+      const card = document.getElementById("the-card");
+
+      let currentScenario = "idle";
+      let currentTheme = "dark";
+
+      function buildConfig() {
+        return {
+          alarm_entity: "sensor.divera_last_alarm",
+          alarm_id_entity: "sensor.divera_last_alarm_id",
+          status_entity: "sensor.divera_status",
+          vehicle_entities: VEHICLES.map((v) => v.id),
+          title: document.getElementById("cfg-title").value || "DIVERA 24/7",
+          unit_name: document.getElementById("cfg-unit").value || "Feuerwehr",
+          show_map: document.getElementById("toggle-map").checked,
+          show_vehicles: document.getElementById("toggle-vehicles").checked,
+          show_status: document.getElementById("toggle-status").checked,
+          theme: currentTheme,
+          map_zoom: 15,
+        };
+      }
+
+      function render() {
+        const userStatus = parseInt(
+          document.getElementById("user-status").value,
+          10,
+        );
+        card.setConfig(buildConfig());
+        card.hass = buildHass(currentScenario, userStatus);
+        document.getElementById("card-bg").className =
+          currentTheme === "dark" ? "theme-bg-dark" : "theme-bg-light";
+      }
+
+      // ── Vehicle FMS controls ──
+      function buildVehicleControls() {
+        const container = document.getElementById("vehicle-controls");
+        container.innerHTML = "";
+        VEHICLES.forEach((v) => {
+          const row = document.createElement("div");
+          row.className = "vehicle-row";
+
+          const dot = document.createElement("div");
+          dot.className = "v-fms-dot";
+          dot.id = `dot-${v.id}`;
+          dot.style.background = FMS_COLORS[vehicleFms[v.id]] || "#555";
+
+          const name = document.createElement("div");
+          name.className = "v-name";
+          name.textContent = v.shortname;
+
+          const sel = document.createElement("select");
+          sel.className = "fms-select";
+          [1, 2, 3, 4, 5, 6].forEach((f) => {
+            const opt = document.createElement("option");
+            opt.value = f;
+            opt.textContent = FMS_LABELS[f];
+            if (f === vehicleFms[v.id]) opt.selected = true;
+            sel.appendChild(opt);
+          });
+          sel.addEventListener("change", () => {
+            vehicleFms[v.id] = parseInt(sel.value, 10);
+            dot.style.background = FMS_COLORS[vehicleFms[v.id]] || "#555";
+            render();
+          });
+
+          row.appendChild(dot);
+          row.appendChild(name);
+          row.appendChild(sel);
+          container.appendChild(row);
+        });
+      }
+
+      // ── Event listeners ──
+      document.querySelectorAll(".scenario-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document
+            .querySelectorAll(".scenario-btn")
+            .forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          currentScenario = btn.dataset.scenario;
+          render();
+        });
+      });
+
+      ["toggle-map", "toggle-vehicles", "toggle-status"].forEach((id) => {
+        document.getElementById(id).addEventListener("change", render);
+      });
+
+      document
+        .getElementById("toggle-theme")
+        .addEventListener("change", (e) => {
+          currentTheme = e.target.checked ? "light" : "dark";
+          render();
+        });
+
+      document.getElementById("user-status").addEventListener("change", render);
+      document.getElementById("cfg-title").addEventListener("input", render);
+      document.getElementById("cfg-unit").addEventListener("input", render);
+
+      // ── Init ──
+      buildVehicleControls();
+      render();
+    </script>
+  </body>
+</html>
