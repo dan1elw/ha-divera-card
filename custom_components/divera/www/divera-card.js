@@ -98,7 +98,7 @@ class DiveraAlarmCard extends HTMLElement {
         --dv-fms3: #fb8c00;
         --dv-fms4: #e53935;
         --dv-fms5: #1e88e5;
-        --dv-fms6: #78909c;
+        --dv-fms6: #212121;
         --dv-radius: 12px;
         --dv-font: 'DM Sans', sans-serif;
         --dv-mono: 'JetBrains Mono', monospace;
@@ -590,7 +590,7 @@ class DiveraAlarmCard extends HTMLElement {
         label: "Unbekannt",
         id: 0,
         cls: "avail-off-duty",
-        icon: "⚪",
+        icon: "⚫",
       };
 
     const attrs = state.attributes || {};
@@ -609,7 +609,7 @@ class DiveraAlarmCard extends HTMLElement {
       icon = "🟡";
       cls = "avail-off-duty";
     } else {
-      icon = "⚪";
+      icon = "⚫";
       cls = "avail-off-duty";
     }
 
@@ -712,12 +712,12 @@ class DiveraAlarmCard extends HTMLElement {
 
   _renderVehicles(vehicles) {
     const fmsLabels = {
-      1: "S1 · frei Funk",
-      2: "S2 · Einsatzbereit",
-      3: "S3 · auf Anfahrt",
-      4: "S4 · am Einsatzort",
-      5: "S5 · Sprechwunsch",
-      6: "S6 · nicht einsatzbereit",
+      1: "Status 1",
+      2: "Status 2",
+      3: "Status 3",
+      4: "Status 4",
+      5: "Status 5",
+      6: "Status 6",
     };
 
     const items = vehicles
