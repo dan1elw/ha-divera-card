@@ -3,16 +3,14 @@
 from yarl import URL
 
 
-def remove_params_from_url(url: URL):
-    """Remove parameters from a URL.
+def remove_params_from_url(url: URL) -> str:
+    """Return the URL as a string with all query parameters removed.
 
     Args:
-        url (str): The URL from which parameters need to be removed.
+        url (URL): The URL from which parameters need to be removed.
 
     Returns:
-        str: URL without the parameters part.
+        str: URL without the query string.
 
     """
-    url.with_query()
-    url_str: str = url.human_repr()
-    return url_str
+    return url.with_query(None).human_repr()
