@@ -217,15 +217,16 @@ class DiveraClient:
         status = self.__data["data"]["status"]
         tz = get_default_time_zone()
         reset_date = status.get("status_reset_date")
-        data = {
+        return {
             "timestamp": datetime.fromtimestamp(status["status_set_date"], tz=tz),
             "id": status["status_id"],
             "note": status.get("note"),
             "vehicle": status.get("vehicle"),
-            "status_reset_date": datetime.fromtimestamp(reset_date, tz=tz) if reset_date else None,
+            "status_reset_date": datetime.fromtimestamp(reset_date, tz=tz)
+            if reset_date
+            else None,
             "status_reset_id": status.get("status_reset_id"),
         }
-        return data
 
     def get_last_event(self) -> CalendarEvent | None:
         """Retrieve the last event from the Divera data.
@@ -382,20 +383,30 @@ class DiveraClient:
             "units": alarm.get("units"),
             "destination": alarm.get("destination"),
             "destination_address": alarm.get("destination_address"),
-            "destination_latitude": str(alarm.get("destination_lat")) if alarm.get("destination_lat") is not None else None,
-            "destination_longitude": str(alarm.get("destination_lng")) if alarm.get("destination_lng") is not None else None,
+            "destination_latitude": str(alarm.get("destination_lat"))
+            if alarm.get("destination_lat") is not None
+            else None,
+            "destination_longitude": str(alarm.get("destination_lng"))
+            if alarm.get("destination_lng") is not None
+            else None,
             "additional_text_1": alarm.get("additional_text_1"),
             "additional_text_2": alarm.get("additional_text_2"),
             "additional_text_3": alarm.get("additional_text_3"),
             "report": alarm.get("report"),
             "vehicles": alarm.get("vehicle", []),
-            "self_status": self.get_state_name_by_id(alarm["ucr_self_status_id"]) if alarm.get("ucr_self_status_id") else None,
+            "self_status": self.get_state_name_by_id(alarm["ucr_self_status_id"])
+            if alarm.get("ucr_self_status_id")
+            else None,
             "self_note": alarm.get("ucr_self_note"),
             "count_recipients": alarm.get("count_recipients"),
             "count_read": alarm.get("count_read"),
             "ts_close": datetime.fromtimestamp(ts_close, tz=tz) if ts_close else None,
-            "ts_create": datetime.fromtimestamp(ts_create, tz=tz) if ts_create else None,
-            "ts_update": datetime.fromtimestamp(ts_update, tz=tz) if ts_update else None,
+            "ts_create": datetime.fromtimestamp(ts_create, tz=tz)
+            if ts_create
+            else None,
+            "ts_update": datetime.fromtimestamp(ts_update, tz=tz)
+            if ts_update
+            else None,
             "custom": alarm.get("custom", []),
         }
 
@@ -492,8 +503,12 @@ class DiveraClient:
             "self_addressed": news.get("ucr_self_addressed"),
             "count_recipients": news.get("count_recipients"),
             "count_read": news.get("count_read"),
-            "ts_create": datetime.fromtimestamp(ts_create, tz=tz) if ts_create else None,
-            "ts_update": datetime.fromtimestamp(ts_update, tz=tz) if ts_update else None,
+            "ts_create": datetime.fromtimestamp(ts_create, tz=tz)
+            if ts_create
+            else None,
+            "ts_update": datetime.fromtimestamp(ts_update, tz=tz)
+            if ts_update
+            else None,
         }
 
     def get_vehicle_id_list(self):
