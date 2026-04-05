@@ -4,8 +4,8 @@ from datetime import timedelta
 
 from aiohttp import ClientSession
 
-from custom_components.divera.const import DEFAULT_SCAN_INTERVAL, LOGGER
-from custom_components.divera.divera import (
+from .const import DEFAULT_SCAN_INTERVAL, LOGGER
+from .divera import (
     DiveraAuthError,
     DiveraClient,
     DiveraConnectionError,
