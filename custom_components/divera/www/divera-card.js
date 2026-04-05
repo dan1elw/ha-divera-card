@@ -122,12 +122,14 @@ class DiveraAlarmCard extends HTMLElement {
       }
       .header-logo {
         width: 36px; height: 36px;
-        background: linear-gradient(135deg, var(--dv-red), #c62828);
         border-radius: 8px;
         display: flex; align-items: center; justify-content: center;
-        font-weight: 700; font-size: 14px; color: #fff;
-        letter-spacing: -0.5px;
         flex-shrink: 0;
+        overflow: hidden;
+      }
+      .header-logo img {
+        width: 100%; height: 100%;
+        object-fit: contain;
       }
       .header-title {
         font-size: 15px; font-weight: 700; letter-spacing: 0.3px;
@@ -580,24 +582,30 @@ class DiveraAlarmCard extends HTMLElement {
         icon: "⚪",
       };
 
-    const statusId = parseInt(state.state, 10);
-    const statusMap = {
-      1: { label: "Auf Wache", icon: "🟢", cls: "avail-on-duty" },
-      2: { label: "Verfügbar", icon: "🟢", cls: "avail-on-duty" },
-      3: { label: "Nicht verfügbar", icon: "🔴", cls: "avail-not-available" },
-      4: { label: "Bedingt verfügbar", icon: "🟡", cls: "avail-off-duty" },
-      0: { label: "Nicht gesetzt", icon: "⚪", cls: "avail-off-duty" },
-    };
+    const attrs = state.attributes || {};
+    const label = (state.state || "").trim();
+    const statusId = attrs.id !== undefined ? parseInt(attrs.id, 10) : null;
+    const lower = label.toLowerCase();
 
-    const s = statusMap[statusId] || statusMap[0];
-    return { ...s, id: statusId, raw: state.state };
+    let icon, cls;
+    if (/nicht|außer|komme nicht/.test(lower)) {
+      icon = "🔴"; cls = "avail-not-available";
+    } else if (/komme|einsatzbereit/.test(lower)) {
+      icon = "🟢"; cls = "avail-on-duty";
+    } else if (/vorlauf|stab|fez|bedingt/.test(lower)) {
+      icon = "🟡"; cls = "avail-off-duty";
+    } else {
+      icon = "⚪"; cls = "avail-off-duty";
+    }
+
+    return { label, icon, cls, id: statusId, raw: state.state };
   }
 
   _renderHeader(alarm) {
     return `
       <div class="card-header">
         <div class="header-left">
-          <div class="header-logo">D</div>
+          <div class="header-logo"><img src="https://app.divera247.com/favicon.ico" alt="Divera" /></div>
           <div>
             <div class="header-title">${this._escapeHtml(
               this._config.title,
@@ -729,7 +737,7 @@ class DiveraAlarmCard extends HTMLElement {
           <div class="availability-icon ${status.cls}">${status.icon}</div>
           <div class="availability-details">
             <div class="availability-label">${status.label}</div>
-            <div class="availability-sublabel">Status ${status.id}</div>
+            ${status.id !== null ? `<div class="availability-sublabel">Status ${status.id}</div>` : ""}
           </div>
         </div>
       </div>
