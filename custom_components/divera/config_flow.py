@@ -5,7 +5,6 @@ from typing import Any
 from voluptuous import Optional, Required, Schema
 
 from homeassistant.config_entries import ConfigEntry, ConfigFlow
-from homeassistant.data_entry_flow import FlowHandler
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.selector import (
     SelectSelector,
@@ -35,7 +34,7 @@ from .const import (
 from .divera import DiveraAuthError, DiveraClient, DiveraConnectionError
 
 
-class DiveraFlow(FlowHandler):
+class DiveraFlow:
     """Flow handler for Divera integration."""
 
     def __init__(self, config_entry: ConfigEntry = None):
