@@ -176,7 +176,7 @@
         --c3: #fb8c00;
         --c4: #e53935;
         --c5: #1e88e5;
-        --c6: #78909c;
+        --c6: #212121;
       }
 
       select.fms-select {
@@ -349,11 +349,14 @@
           id="user-status"
           style="width: 100%; padding: 6px 8px"
         >
-          <option value="0">⚪ 0 – Nicht gesetzt</option>
-          <option value="1" selected>🟢 1 – Auf Wache</option>
-          <option value="2">🟢 2 – Verfügbar</option>
-          <option value="3">🔴 3 – Nicht verfügbar</option>
-          <option value="4">🟡 4 – Bedingt verfügbar</option>
+          <option value="Außer Dienst">⚫ Außer Dienst</option>
+          <option value="Komme nicht ">🔴 Komme nicht</option>
+          <option value="Nicht einsatzbereit">🔴 Nicht einsatzbereit</option>
+          <option value="FEZ / Stab">🟡 FEZ / Stab</option>
+          <option value="Komme">🟢 Komme</option>
+          <option value="Einsatzbereit " selected>🟢 Einsatzbereit</option>
+          <option value="1 std. Vorlauf">🟡 1 std. Vorlauf</option>
+          <option value="Vorlauf 1 std.">🟡 Vorlauf 1 std.</option>
         </select>
       </div>
 
@@ -379,20 +382,25 @@
       // ── Mock vehicle fleet ──
       const VEHICLES = [
         {
-          id: "sensor.v_hlf",
-          shortname: "HLF20/16",
-          fullname: "Hilfeleistungslöschfahrzeug",
+          id: "sensor.divera_fahrzeug_1",
+          shortname: "HLF 20",
+          fullname: "Hilfeleistungslöschfahrzeug 20",
           fms: 2,
         },
         {
-          id: "sensor.v_tlf",
-          shortname: "TLF3000",
-          fullname: "Tanklöschfahrzeug",
+          id: "sensor.divera_fahrzeug_2",
+          shortname: "LF 10",
+          fullname: "Löschfahrzeug 10",
           fms: 2,
         },
-        { id: "sensor.v_rw", shortname: "RW", fullname: "Rüstwagen", fms: 1 },
         {
-          id: "sensor.v_elw",
+          id: "sensor.divera_fahrzeug_3",
+          shortname: "TLF 3000",
+          fullname: "Tanklöschfahrzeug 3000",
+          fms: 1,
+        },
+        {
+          id: "sensor.divera_fahrzeug_4",
           shortname: "ELW",
           fullname: "Einsatzleitwagen",
           fms: 6,
@@ -417,19 +425,19 @@
         3: "#fb8c00",
         4: "#e53935",
         5: "#1e88e5",
-        6: "#78909c",
+        6: "#212121",
       };
 
       // ── Scenarios ──
       const SCENARIOS = {
         idle: {
           state: "idle",
-          attrs: {},
+          attrs: { closed: true },
         },
         "alarm-high": {
           state: "Brand in Gebäude",
           attrs: {
-            title: "Brand in Gebäude",
+            title: "B2 — Brand in Gebäude",
             text: "Mehrfamilienhaus, Rauch aus dem 3. OG. Personen eingeschlossen.",
             address: "Hauptstraße 42, 12345 Musterstadt",
             lat: 52.52,
@@ -437,14 +445,14 @@
             priority: true,
             closed: false,
             date: new Date(Date.now() - 7 * 60000).toISOString(),
-            id: "24001",
-            groups: ["Zug 1"],
+            id: 33170001,
+            groups: ["Feuerwehr Musterstadt"],
           },
         },
         "alarm-std": {
           state: "Hilfeleistung",
           attrs: {
-            title: "Hilfeleistung — VU",
+            title: "H1 — Hilfeleistung VU",
             text: "Verkehrsunfall mit eingeklemmter Person, 2 Fahrzeuge beteiligt.",
             address: "Bahnhofstraße 7, 12345 Musterstadt",
             lat: 52.517,
@@ -452,39 +460,54 @@
             priority: false,
             closed: false,
             date: new Date(Date.now() - 3 * 60000).toISOString(),
-            id: "24002",
-            groups: ["Zug 2"],
+            id: 33170002,
+            groups: ["Feuerwehr Musterstadt"],
           },
         },
         "alarm-noloc": {
           state: "Einsatz",
           attrs: {
-            title: "Einsatz ohne Koordinaten",
+            title: "B1 — Einsatz ohne Koordinaten",
             text: "Adresse liegt außerhalb des Kartierungsbereichs.",
-            address: "Unbekannte Straße",
+            address: "Waldweg, Musterstadt",
             lat: null,
             lng: null,
             priority: true,
             closed: false,
             date: new Date(Date.now() - 1 * 60000).toISOString(),
-            id: "24003",
+            id: 33170003,
           },
         },
       };
 
+      // ── Status label → numeric ID mapping (mirrors Divera unit config) ──
+      const STATUS_ID_MAP = {
+        "Außer Dienst": 1,
+        "Komme nicht ": 2,
+        "Nicht einsatzbereit": 3,
+        "FEZ / Stab": 4,
+        Komme: 5,
+        "Einsatzbereit ": 6,
+        "1 std. Vorlauf": 7,
+        "Vorlauf 1 std.": 8,
+      };
+
       // ── Build mock hass object ──
-      function buildHass(scenario, userStatus) {
+      function buildHass(scenario, userStatusLabel) {
         const s = SCENARIOS[scenario];
         const states = {};
 
-        states["sensor.divera_last_alarm"] = {
+        states["sensor.feuerwehren_schmitten_letzter_alarm"] = {
           state: s.state,
           attributes: { ...s.attrs },
         };
 
-        states["sensor.divera_status"] = {
-          state: String(userStatus),
-          attributes: { friendly_name: "Divera Status" },
+        states["select.feuerwehren_schmitten_benutzer_status"] = {
+          state: userStatusLabel,
+          attributes: {
+            friendly_name: "Benutzer Status",
+            id: STATUS_ID_MAP[userStatusLabel] ?? null,
+          },
         };
 
         VEHICLES.forEach((v) => {
@@ -520,9 +543,8 @@
 
       function buildConfig() {
         return {
-          alarm_entity: "sensor.divera_last_alarm",
-          alarm_id_entity: "sensor.divera_last_alarm_id",
-          status_entity: "sensor.divera_status",
+          alarm_entity: "sensor.feuerwehren_schmitten_letzter_alarm",
+          status_entity: "select.feuerwehren_schmitten_benutzer_status",
           vehicle_entities: VEHICLES.map((v) => v.id),
           title: document.getElementById("cfg-title").value || "DIVERA 24/7",
           unit_name: document.getElementById("cfg-unit").value || "Feuerwehr",
@@ -535,10 +557,7 @@
       }
 
       function render() {
-        const userStatus = parseInt(
-          document.getElementById("user-status").value,
-          10,
-        );
+        const userStatus = document.getElementById("user-status").value;
         card.setConfig(buildConfig());
         card.hass = buildHass(currentScenario, userStatus);
         document.getElementById("card-bg").className =
