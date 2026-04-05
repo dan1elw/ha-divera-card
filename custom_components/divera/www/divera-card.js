@@ -550,12 +550,19 @@ class DiveraAlarmCard extends HTMLElement {
   }
 
   _fmsFromState(stateStr) {
+    // Check if state is already a numeric FMS status (1-6)
+    const numState = parseInt(stateStr, 10);
+    if (!isNaN(numState) && numState >= 1 && numState <= 6) {
+      return numState;
+    }
+
+    // Fall back to text mapping for German labels
     const map = {
-      funkfrei: 1,
-      "auf wache": 2,
-      "einsatz übernommen": 3,
-      "einsatzstelle an": 4,
-      sprechwunsch: 5,
+      "frei Funk": 1,
+      "Einsatzbereit": 2,
+      "auf Anfahrt": 3,
+      "am Einsatzort": 4,
+      "Sprechwunsch": 5,
       "nicht einsatzbereit": 6,
     };
     return map[(stateStr || "").toLowerCase()] || 0;
