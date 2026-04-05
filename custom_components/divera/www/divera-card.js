@@ -1,21 +1,16 @@
 /**
  * DIVERA 24/7 Alarm Dashboard Card for Home Assistant
- * 
+ *
  * A comprehensive Lovelace card showing:
  * - Active alarm status with priority indicator
  * - Alarm details (title, address, message, timestamp)
  * - Embedded map with alarm location
  * - Vehicle status overview (FMS)
  * - Personal availability status
- * 
+ *
  * Prerequisites:
  * - dan1elw/ha-divera-card HACS integration installed & configured
  * - REST sensors for vehicle status (see setup guide)
- * 
- * Installation:
- * 1. Copy this file to /config/www/divera-alarm-card.js
- * 2. Add resource in HA: /local/divera-alarm-card.js (JavaScript Module)
- * 3. Add card via YAML (see setup guide)
  */
 
 class DiveraAlarmCard extends HTMLElement {
@@ -42,7 +37,6 @@ class DiveraAlarmCard extends HTMLElement {
       show_vehicles: config.show_vehicles !== false,
       show_status: config.show_status !== false,
       map_zoom: config.map_zoom || 15,
-      map_provider: config.map_provider || 'osm', // 'osm' or 'google'
       // Theming
       theme: config.theme || 'dark', // 'dark' or 'light'
     };
@@ -58,11 +52,13 @@ class DiveraAlarmCard extends HTMLElement {
       <style>
         ${this._getStyles()}
       </style>
-      <div class="divera-card" id="card-root">
-        <div class="card-loading">
-          <div class="spinner"></div>
-          <span>Verbindung zu DIVERA 24/7...</span>
-        </div>
+      <div class="divera-card">
+        <div id="s-header"></div>
+        <div id="s-alarm"></div>
+        <div id="s-map" class="map-section" style="display:none"></div>
+        <div id="s-vehicles"></div>
+        <div id="s-status"></div>
+        <div id="s-footer"></div>
       </div>
     `;
   }
@@ -413,22 +409,75 @@ class DiveraAlarmCard extends HTMLElement {
 
   _updateCard() {
     if (!this._hass || !this._config) return;
-
-    const root = this.shadowRoot.getElementById('card-root');
-    if (!root) return;
+    const sr = this.shadowRoot;
+    if (!sr.getElementById('s-header')) return;
 
     const alarm = this._getAlarmData();
     const vehicles = this._getVehicleData();
     const status = this._getStatusData();
 
-    root.innerHTML = `
-      ${this._renderHeader(alarm)}
-      ${this._renderAlarm(alarm)}
-      ${this._config.show_map ? this._renderMap(alarm) : ''}
-      ${this._config.show_vehicles && vehicles.length ? this._renderVehicles(vehicles) : ''}
-      ${this._config.show_status ? this._renderAvailability(status) : ''}
-      ${this._renderFooter()}
-    `;
+    sr.getElementById('s-header').innerHTML = this._renderHeader(alarm);
+    sr.getElementById('s-alarm').innerHTML = this._renderAlarm(alarm);
+
+    if (this._config.show_map) {
+      this._updateMap(alarm);
+    } else {
+      sr.getElementById('s-map').style.display = 'none';
+    }
+
+    const vehicleSection = sr.getElementById('s-vehicles');
+    vehicleSection.innerHTML = (this._config.show_vehicles && vehicles.length)
+      ? this._renderVehicles(vehicles)
+      : '';
+
+    const statusSection = sr.getElementById('s-status');
+    statusSection.innerHTML = this._config.show_status
+      ? this._renderAvailability(status)
+      : '';
+
+    sr.getElementById('s-footer').innerHTML = this._renderFooter();
+  }
+
+  _updateMap(alarm) {
+    const section = this.shadowRoot.getElementById('s-map');
+    if (!section) return;
+
+    if (!alarm.active) {
+      section.style.display = 'none';
+      this._mapUrl = null;
+      return;
+    }
+
+    section.style.display = 'block';
+
+    if (!alarm.lat || !alarm.lng) {
+      if (this._mapUrl !== 'placeholder') {
+        section.innerHTML = `
+          <div class="map-placeholder">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Kein Einsatzort verfügbar
+          </div>
+        `;
+        this._mapUrl = 'placeholder';
+      }
+      return;
+    }
+
+    const zoom = this._config.map_zoom;
+    const delta = 0.005 * Math.pow(2, 15 - zoom);
+    const { lat, lng } = alarm;
+    const mapUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${lng - delta * 1.6},${lat - delta},${lng + delta * 1.6},${lat + delta}&layer=mapnik&marker=${lat},${lng}`;
+
+    if (this._mapUrl === mapUrl) return;
+
+    this._mapUrl = mapUrl;
+    const iframe = document.createElement('iframe');
+    iframe.src = mapUrl;
+    iframe.loading = 'lazy';
+    iframe.referrerPolicy = 'no-referrer';
+    iframe.title = 'Einsatzort';
+    section.innerHTML = '';
+    section.appendChild(iframe);
   }
 
   _getAlarmData() {
@@ -443,7 +492,7 @@ class DiveraAlarmCard extends HTMLElement {
     const attrs = alarmState.attributes || {};
     const state = alarmState.state;
 
-    // The fwmarcel integration exposes alarm data as sensor attributes
+    // The integration exposes alarm data as sensor attributes
     const isActive = state !== '' && state !== 'idle' && state !== 'unavailable'
       && state !== 'unknown' && state !== 'None' && !attrs.closed;
 
@@ -491,7 +540,7 @@ class DiveraAlarmCard extends HTMLElement {
   _getStatusData() {
     const entity = this._config.status_entity;
     const state = this._hass.states[entity];
-    if (!state) return { available: false, label: 'Unbekannt', id: 0 };
+    if (!state) return { available: false, label: 'Unbekannt', id: 0, cls: 'avail-off-duty', icon: '⚪' };
 
     const statusId = parseInt(state.state, 10);
     const statusMap = {
@@ -512,8 +561,8 @@ class DiveraAlarmCard extends HTMLElement {
         <div class="header-left">
           <div class="header-logo">D</div>
           <div>
-            <div class="header-title">${this._config.title}</div>
-            <div class="header-unit">${this._config.unit_name}</div>
+            <div class="header-title">${this._escapeHtml(this._config.title)}</div>
+            <div class="header-unit">${this._escapeHtml(this._config.unit_name)}</div>
           </div>
         </div>
         <div class="header-status-badge ${alarm.active ? 'badge-alarm' : 'badge-idle'}">
@@ -536,7 +585,6 @@ class DiveraAlarmCard extends HTMLElement {
     }
 
     const priorityClass = alarm.priority ? 'priority-high' : 'priority-low';
-    const priorityLabel = alarm.priority ? 'Sonderrechte' : 'Ohne Sonderrechte';
     const timeStr = alarm.timestamp ? this._formatTime(alarm.timestamp) : '';
 
     return `
@@ -569,37 +617,6 @@ class DiveraAlarmCard extends HTMLElement {
             ` : ''}
           </div>
         </div>
-      </div>
-    `;
-  }
-
-  _renderMap(alarm) {
-    if (!alarm.active || !alarm.lat || !alarm.lng) {
-      return `
-        <div class="map-section">
-          <div class="map-placeholder">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            Kein Einsatzort verfügbar
-          </div>
-        </div>
-      `;
-    }
-
-    const zoom = this._config.map_zoom;
-    const lat = alarm.lat;
-    const lng = alarm.lng;
-
-    // OpenStreetMap embed
-    const mapUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${lng-0.008},${lat-0.005},${lng+0.008},${lat+0.005}&layer=mapnik&marker=${lat},${lng}`;
-
-    return `
-      <div class="map-section">
-        <iframe
-          src="${mapUrl}"
-          loading="lazy"
-          referrerpolicy="no-referrer"
-          title="Einsatzort"
-        ></iframe>
       </div>
     `;
   }
