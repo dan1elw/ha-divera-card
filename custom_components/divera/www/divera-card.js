@@ -589,13 +589,17 @@ class DiveraAlarmCard extends HTMLElement {
 
     let icon, cls;
     if (/nicht|außer|komme nicht/.test(lower)) {
-      icon = "🔴"; cls = "avail-not-available";
+      icon = "🔴";
+      cls = "avail-not-available";
     } else if (/komme|einsatzbereit/.test(lower)) {
-      icon = "🟢"; cls = "avail-on-duty";
+      icon = "🟢";
+      cls = "avail-on-duty";
     } else if (/vorlauf|stab|fez|bedingt/.test(lower)) {
-      icon = "🟡"; cls = "avail-off-duty";
+      icon = "🟡";
+      cls = "avail-off-duty";
     } else {
-      icon = "⚪"; cls = "avail-off-duty";
+      icon = "⚪";
+      cls = "avail-off-duty";
     }
 
     return { label, icon, cls, id: statusId, raw: state.state };
@@ -737,7 +741,11 @@ class DiveraAlarmCard extends HTMLElement {
           <div class="availability-icon ${status.cls}">${status.icon}</div>
           <div class="availability-details">
             <div class="availability-label">${status.label}</div>
-            ${status.id !== null ? `<div class="availability-sublabel">Status ${status.id}</div>` : ""}
+            ${
+              status.id !== null
+                ? `<div class="availability-sublabel">Status ${status.id}</div>`
+                : ""
+            }
           </div>
         </div>
       </div>
