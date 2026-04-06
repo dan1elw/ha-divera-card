@@ -431,17 +431,17 @@
       // ── Scenarios ──
       const SCENARIOS = {
         idle: {
-          state: "idle",
+          state: "off",
           attrs: { closed: true },
         },
         "alarm-high": {
-          state: "Brand in Gebäude",
+          state: "on",
           attrs: {
             title: "B2 — Brand in Gebäude",
             text: "Mehrfamilienhaus, Rauch aus dem 3. OG. Personen eingeschlossen.",
             address: "Hauptstraße 42, 12345 Musterstadt",
-            lat: 52.52,
-            lng: 13.405,
+            latitude: "52.52",
+            longitude: "13.405",
             priority: true,
             closed: false,
             date: new Date(Date.now() - 7 * 60000).toISOString(),
@@ -450,13 +450,13 @@
           },
         },
         "alarm-std": {
-          state: "Hilfeleistung",
+          state: "on",
           attrs: {
             title: "H1 — Hilfeleistung VU",
             text: "Verkehrsunfall mit eingeklemmter Person, 2 Fahrzeuge beteiligt.",
             address: "Bahnhofstraße 7, 12345 Musterstadt",
-            lat: 52.517,
-            lng: 13.389,
+            latitude: "52.517",
+            longitude: "13.389",
             priority: false,
             closed: false,
             date: new Date(Date.now() - 3 * 60000).toISOString(),
@@ -465,13 +465,13 @@
           },
         },
         "alarm-noloc": {
-          state: "Einsatz",
+          state: "on",
           attrs: {
             title: "B1 — Einsatz ohne Koordinaten",
             text: "Adresse liegt außerhalb des Kartierungsbereichs.",
             address: "Waldweg, Musterstadt",
-            lat: null,
-            lng: null,
+            latitude: null,
+            longitude: null,
             priority: true,
             closed: false,
             date: new Date(Date.now() - 1 * 60000).toISOString(),
@@ -497,7 +497,7 @@
         const s = SCENARIOS[scenario];
         const states = {};
 
-        states["sensor.feuerwehren_schmitten_letzter_alarm"] = {
+        states["binary_sensor.feuerwehren_schmitten_aktiver_alarm"] = {
           state: s.state,
           attributes: { ...s.attrs },
         };
@@ -543,7 +543,7 @@
 
       function buildConfig() {
         return {
-          alarm_entity: "sensor.feuerwehren_schmitten_letzter_alarm",
+          alarm_entity: "binary_sensor.feuerwehren_schmitten_aktiver_alarm",
           status_entity: "select.feuerwehren_schmitten_benutzer_status",
           vehicle_entities: VEHICLES.map((v) => v.id),
           title: document.getElementById("cfg-title").value || "DIVERA 24/7",

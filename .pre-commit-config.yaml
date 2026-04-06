@@ -12,7 +12,7 @@ repos:
     hooks:
       - id: codespell
         args:
-          - --ignore-words-list=additionals,adresse,alle,alot,als,alternativ,astroid,bund,caf,convencional,currenty,datas,farenheit,falsy,fo,frequence,funktion,haa,hass,iif,incomfort,ines,ist,nam,nd,oder,pres,pullrequests,referenz,resset,rime,ser,serie,szenario,te,technik,ue,unsecure,unter,vor,withing,zar
+          - --ignore-words-list=additionals,adresse,alle,alot,als,alternativ,astroid,attribut,bund,caf,convencional,currenty,datas,farenheit,falsy,fo,frequence,funktion,haa,hass,iif,incomfort,ines,intervall,ist,nam,nd,oder,pres,pullrequests,referenz,resset,rime,ser,serie,szenario,te,technik,titel,ue,unsecure,unter,vor,withing,zar
           - --skip="./.*,*.csv,*.json,*.ambr"
           - --quiet-level=2
         exclude_types: [csv, json]

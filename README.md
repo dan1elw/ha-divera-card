@@ -10,7 +10,7 @@
 
 ## Overview
 
-![divera logo](divera247_long.png)
+<p align="center"><img src="./docu/img/divera247_long.png" width="50%"></p>
 
 The Divera 24/7 Home Assistant Custom Integration allows you to integrate your Divera 24/7
 system with your Home Assistant setup. With this integration, you can monitor and control your Divera 24/7
@@ -76,14 +76,40 @@ Access the Divera 24/7 entities from your Home Assistant dashboard to view avail
 The entities are updated every minute by default.
 If a more frequent update is required, this must be implemented using the `homeassistant.update_entity` service itself. However, I do not recommend this.
 
+### Dashboard Card
+
+This integration ships a custom Lovelace card (`divera-alarm-card`) that is automatically registered as a frontend resource on load. Add it to any dashboard in YAML mode:
+
+```yaml
+type: custom:divera-alarm-card
+alarm_entity: binary_sensor.feuerwehr_musterstadt_active_alarm
+status_entity: select.feuerwehr_musterstadt_user_status
+vehicle_entities:
+  - sensor.feuerwehr_musterstadt_vehicle_status_hlf20
+  - sensor.feuerwehr_musterstadt_vehicle_status_tlf3000
+```
+
+The card displays the current alarm state, incident address, an embedded map, vehicle FMS status, and your personal availability — all in one view.
+
+<p align="center"><img src="./docu/img/card_example.png" width="50%"></p>
+
+> A full configuration reference and setup guide is available in [docu/SETUP-CARD.md](docu/SETUP-CARD.md).
+> Use [card-simulator.html](card-simulator.html) to preview the card without a running Home Assistant instance.
+
 ### Entities
 
-This integration provides entities for the following information from Divera 24/7:
+This integration provides the following entities:
 
-- the last visible alarm.
-- the last news
-- calendar entries
-- the current status of the user.
+| Platform        | Entity                           | Description                                                                       |
+| --------------- | -------------------------------- | --------------------------------------------------------------------------------- |
+| `binary_sensor` | `binary_sensor.*_active_alarm`   | `on` when there is at least one open alarm; alarm details available as attributes |
+| `sensor`        | `sensor.*_last_alarm`            | Title of the most recent alarm                                                    |
+| `sensor`        | `sensor.*_last_news`             | Title of the most recent news item                                                |
+| `sensor`        | `sensor.*_vehicle_status_<name>` | FMS status for each vehicle in your unit                                          |
+| `select`        | `select.*_user_status`           | Your current Divera availability status (read/write)                              |
+| `calendar`      | `calendar.*_events`              | Upcoming calendar entries                                                         |
+
+> **Note:** The `*` placeholder in entity IDs is derived from your unit name (e.g. `feuerwehr_musterstadt`). Find your exact entity IDs under **Developer Tools → States** after setup.
 
 ## Automation Blueprint
 
