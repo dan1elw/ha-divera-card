@@ -10,8 +10,8 @@ Use it to inspect how the card looks and behaves **without a running Home Assist
 No build step or local server is required. Open the file directly in any modern browser:
 
 ```bash
-xdg-open card-simulator.html        # Linux
-open card-simulator.html             # macOS
+xdg-open docu/card-simulator.html        # Linux
+open docu/card-simulator.html             # macOS
 # or drag the file into your browser
 ```
 

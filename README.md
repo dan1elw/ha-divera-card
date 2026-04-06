@@ -94,7 +94,7 @@ The card displays the current alarm state, incident address, an embedded map, ve
 <p align="center"><img src="./docu/img/card_example.png" width="50%"></p>
 
 > A full configuration reference and setup guide is available in [docu/SETUP-CARD.md](docu/SETUP-CARD.md).
-> Use [card-simulator.html](card-simulator.html) to preview the card without a running Home Assistant instance.
+> Use [docu/card-simulator.html](docu/card-simulator.html) to preview the card without a running Home Assistant instance.
 
 ### Entities
 

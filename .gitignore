@@ -1,20 +1,21 @@
-# artifacts
-__pycache__
-.pytest*
-*.egg-info
-*/build/*
-*/dist/*
-
-
-# misc
+# Python
+__pycache__/
+*.egg-info/
+.pytest_cache/
 .coverage
-.vscode
-.idea
-.ruff_cache
 coverage.xml
 
+# Linting / formatting caches
+.ruff_cache/
 
-# Home Assistant configuration
+# Node
+node_modules/
+
+# IDEs
+.vscode/
+.idea/
+
+# Home Assistant local config
 config/*
 !config/configuration.yaml
 
