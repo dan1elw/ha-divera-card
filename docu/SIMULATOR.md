@@ -3,13 +3,15 @@
 A standalone browser-based preview tool for the `divera-alarm-card` Lovelace card.
 Use it to inspect how the card looks and behaves **without a running Home Assistant instance**.
 
+<p align="center"><img src="./img/card_example.png" width="70%"></p>
+
 ## Opening the simulator
 
 No build step or local server is required. Open the file directly in any modern browser:
 
 ```bash
-xdg-open simulator.html        # Linux
-open simulator.html             # macOS
+xdg-open card-simulator.html        # Linux
+open card-simulator.html             # macOS
 # or drag the file into your browser
 ```
 

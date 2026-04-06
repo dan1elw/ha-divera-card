@@ -10,7 +10,7 @@
 
 ## Overview
 
-![divera logo](divera247_long.png)
+<p align="center"><img src="./docu/img/divera247_long.png" width="50%"></p>
 
 The Divera 24/7 Home Assistant Custom Integration allows you to integrate your Divera 24/7
 system with your Home Assistant setup. With this integration, you can monitor and control your Divera 24/7
@@ -75,6 +75,26 @@ Access the Divera 24/7 entities from your Home Assistant dashboard to view avail
 
 The entities are updated every minute by default.
 If a more frequent update is required, this must be implemented using the `homeassistant.update_entity` service itself. However, I do not recommend this.
+
+### Dashboard Card
+
+This integration ships a custom Lovelace card (`divera-alarm-card`) that is automatically registered as a frontend resource on load. Add it to any dashboard in YAML mode:
+
+```yaml
+type: custom:divera-alarm-card
+alarm_entity: binary_sensor.feuerwehr_musterstadt_active_alarm
+status_entity: select.feuerwehr_musterstadt_user_status
+vehicle_entities:
+  - sensor.feuerwehr_musterstadt_vehicle_status_hlf20
+  - sensor.feuerwehr_musterstadt_vehicle_status_tlf3000
+```
+
+The card displays the current alarm state, incident address, an embedded map, vehicle FMS status, and your personal availability — all in one view.
+
+<p align="center"><img src="./docu/img/card_example.png" width="50%"></p>
+
+> A full configuration reference and setup guide is available in [docu/SETUP-CARD.md](docu/SETUP-CARD.md).
+> Use [card-simulator.html](card-simulator.html) to preview the card without a running Home Assistant instance.
 
 ### Entities
 
