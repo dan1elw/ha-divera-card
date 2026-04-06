@@ -159,14 +159,14 @@ automation:
 
 Da die Entity-Benennung vom Einheitsnamen abhängt, hier eine Übersicht zur Identifikation:
 
-| Funktion              | Entity-Platform  | Typischer Entity-Name                              | Wo prüfen                                        |
-| --------------------- | ---------------- | -------------------------------------------------- | ------------------------------------------------ |
-| Aktiver Alarm         | `binary_sensor`  | `binary_sensor.*_active_alarm`                     | Entwicklerwerkzeuge → Zustände → "divera" suchen |
-| Letzter Alarm (Titel) | `sensor`         | `sensor.*_last_alarm`                              | ditto                                            |
-| Letzte Neuigkeit      | `sensor`         | `sensor.*_last_news`                               | ditto                                            |
-| Fahrzeugstatus        | `sensor`         | `sensor.*_vehicle_status_<fahrzeugname>`           | ditto                                            |
-| Eigener Status        | `select`         | `select.*_user_status`                             | ditto                                            |
-| Kalender              | `calendar`       | `calendar.*_events`                                | ditto                                            |
+| Funktion              | Entity-Platform | Typischer Entity-Name                    | Wo prüfen                                        |
+| --------------------- | --------------- | ---------------------------------------- | ------------------------------------------------ |
+| Aktiver Alarm         | `binary_sensor` | `binary_sensor.*_active_alarm`           | Entwicklerwerkzeuge → Zustände → "divera" suchen |
+| Letzter Alarm (Titel) | `sensor`        | `sensor.*_last_alarm`                    | ditto                                            |
+| Letzte Neuigkeit      | `sensor`        | `sensor.*_last_news`                     | ditto                                            |
+| Fahrzeugstatus        | `sensor`        | `sensor.*_vehicle_status_<fahrzeugname>` | ditto                                            |
+| Eigener Status        | `select`        | `select.*_user_status`                   | ditto                                            |
+| Kalender              | `calendar`      | `calendar.*_events`                      | ditto                                            |
 
 > **Wichtig:** Ersetze `*` durch den slugifizierten Einheitsnamen. Prüfe immer unter **Entwicklerwerkzeuge → Zustände** nach der Ersteinrichtung, welche Entities tatsächlich angelegt wurden, und passe die Card-Konfiguration entsprechend an.
 
@@ -174,19 +174,19 @@ Da die Entity-Benennung vom Einheitsnamen abhängt, hier eine Übersicht zur Ide
 
 Das `binary_sensor.*_active_alarm` stellt folgende Attribute bereit (wenn ein Alarm vorhanden ist):
 
-| Attribut              | Beschreibung                          |
-| --------------------- | ------------------------------------- |
-| `title`               | Alarmstichwort                        |
-| `text`                | Alarmtext / Einsatzmeldung            |
-| `address`             | Einsatzadresse                        |
-| `latitude`            | Breitengrad des Einsatzorts           |
-| `longitude`           | Längengrad des Einsatzorts            |
-| `priority`            | `true` = hohe Priorität              |
-| `closed`              | `true` = Einsatz abgeschlossen       |
-| `date`                | Alarmierungszeitpunkt                 |
-| `id`                  | Interne Alarm-ID                      |
-| `groups`              | Alarmierte Gruppen                    |
-| `answered`            | Eigene Rückmeldung                    |
+| Attribut    | Beschreibung                   |
+| ----------- | ------------------------------ |
+| `title`     | Alarmstichwort                 |
+| `text`      | Alarmtext / Einsatzmeldung     |
+| `address`   | Einsatzadresse                 |
+| `latitude`  | Breitengrad des Einsatzorts    |
+| `longitude` | Längengrad des Einsatzorts     |
+| `priority`  | `true` = hohe Priorität        |
+| `closed`    | `true` = Einsatz abgeschlossen |
+| `date`      | Alarmierungszeitpunkt          |
+| `id`        | Interne Alarm-ID               |
+| `groups`    | Alarmierte Gruppen             |
+| `answered`  | Eigene Rückmeldung             |
 
 ---
 

@@ -6,12 +6,12 @@ This document describes the GitHub Actions workflows, branch strategy, commit co
 
 ## Branch strategy
 
-| Branch      | Purpose                                        |
-| ----------- | ---------------------------------------------- |
-| `main`      | Stable integration branch; tests run on push   |
-| `develop`   | Ongoing development; target for Renovate PRs and feature merges; produces RC prereleases |
-| `release`   | Triggers stable releases when pushed           |
-| `feat/*`    | Feature branches; merged into `develop` via PR |
+| Branch    | Purpose                                                                                  |
+| --------- | ---------------------------------------------------------------------------------------- |
+| `main`    | Stable integration branch; tests run on push                                             |
+| `develop` | Ongoing development; target for Renovate PRs and feature merges; produces RC prereleases |
+| `release` | Triggers stable releases when pushed                                                     |
+| `feat/*`  | Feature branches; merged into `develop` via PR                                           |
 
 **Typical flow:**
 
@@ -45,10 +45,10 @@ Runs on **pull requests targeting `main`, `develop`, `release`, or `feat/*`**.
 
 Two parallel jobs:
 
-| Job        | Tool                                | What it checks                                     |
-| ---------- | ----------------------------------- | -------------------------------------------------- |
-| `hassfest` | `home-assistant/actions/hassfest`   | HA integration manifest, translations, and platform structure |
-| `hacs`     | `hacs/action`                       | HACS compatibility (category: `integration`)       |
+| Job        | Tool                              | What it checks                                                |
+| ---------- | --------------------------------- | ------------------------------------------------------------- |
+| `hassfest` | `home-assistant/actions/hassfest` | HA integration manifest, translations, and platform structure |
+| `hacs`     | `hacs/action`                     | HACS compatibility (category: `integration`)                  |
 
 ### `pr-title.yml` — Semantic PR title
 
@@ -62,6 +62,7 @@ Runs on PR **open, edit, and synchronize** events.
 Runs on **push to `release`** or **manual workflow dispatch**.
 
 Steps:
+
 1. Checkout with full history (`fetch-depth: 0`)
 2. Setup Node.js LTS
 3. `npm clean-install`
@@ -73,17 +74,17 @@ Steps:
 
 Commits must follow the **Conventional Commits** specification. The type determines the release section and version bump:
 
-| Type       | Release section                  | Version bump         |
-| ---------- | -------------------------------- | -------------------- |
-| `feat`     | Features :sparkles:              | Minor (`x.Y.0`)      |
-| `feature`  | Features :sparkles:              | Minor                |
-| `fix`      | Bug Fixes :bug:                  | Patch (`x.y.Z`)      |
-| `docs`     | Documentation :books:            | Patch                |
-| `refactor` | Code Refactoring :hammer:        | Patch                |
-| `test`     | Tests :umbrella:                 | Patch                |
-| `ci`       | Continuous Integration :wrench:  | Patch                |
-| `style`    | *(no release section)*           | No release           |
-| `chore`    | *(no release section)*           | No release           |
+| Type       | Release section                 | Version bump    |
+| ---------- | ------------------------------- | --------------- |
+| `feat`     | Features :sparkles:             | Minor (`x.Y.0`) |
+| `feature`  | Features :sparkles:             | Minor           |
+| `fix`      | Bug Fixes :bug:                 | Patch (`x.y.Z`) |
+| `docs`     | Documentation :books:           | Patch           |
+| `refactor` | Code Refactoring :hammer:       | Patch           |
+| `test`     | Tests :umbrella:                | Patch           |
+| `ci`       | Continuous Integration :wrench: | Patch           |
+| `style`    | _(no release section)_          | No release      |
+| `chore`    | _(no release section)_          | No release      |
 
 A `BREAKING CHANGE` footer on any commit triggers a **major** version bump (`X.0.0`).
 
@@ -109,11 +110,11 @@ BREAKING CHANGE: alarm_entity config must now point to binary_sensor.*_active_al
 3. Semantic Release:
    a. Analyzes commits since the last tag to determine the next version
    b. Runs `./scripts/prepare-release.sh <version>` which:
-      - Updates `"version"` in `custom_components/divera/manifest.json`
-      - Creates `custom_components/divera/divera.zip` (the installable archive)
-   c. Commits the updated `manifest.json` back to the repository
-   d. Creates a GitHub Release with the changelog and attaches `divera.zip` as a release asset
-   e. Comments on released issues and pull requests
+   - Updates `"version"` in `custom_components/divera/manifest.json`
+   - Creates `custom_components/divera/divera.zip` (the installable archive)
+     c. Commits the updated `manifest.json` back to the repository
+     d. Creates a GitHub Release with the changelog and attaches `divera.zip` as a release asset
+     e. Comments on released issues and pull requests
 
 ### Pre-release (`develop` branch)
 
@@ -129,12 +130,12 @@ Pushing to `develop` produces a release candidate tagged `x.y.z-rc.N`.
 
 [Renovate](https://docs.renovatebot.com/) is configured in [`.github/renovate.json`](../.github/renovate.json).
 
-| Setting            | Value                                                |
-| ------------------ | ---------------------------------------------------- |
-| Target branch      | `develop`                                            |
-| Timezone           | `Europe/Berlin`                                      |
-| Minor/patch updates| Auto-merged, labeled `dependencies`                  |
-| Major updates      | Not auto-merged, labeled `dependencies` + `breaking` |
+| Setting             | Value                                                |
+| ------------------- | ---------------------------------------------------- |
+| Target branch       | `develop`                                            |
+| Timezone            | `Europe/Berlin`                                      |
+| Minor/patch updates | Auto-merged, labeled `dependencies`                  |
+| Major updates       | Not auto-merged, labeled `dependencies` + `breaking` |
 
 All dependency PRs land on `develop`, not `main`, so they go through the normal develop → release flow before shipping.
 
